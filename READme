@@ -1,0 +1,46 @@
+
+
+📦 Order Tracker App
+A simple Order Tracking Android application built with Jetpack Compose, MVVM, and Hilt,
+using a fake in-memory data source to simulate creating, viewing, and deleting orders.
+This project demonstrates modern Android development best practices without relying on a real backend or database.
+
+✨ FEATURES
+📋 View a list of orders
+➕ Create a new order
+🗑️ Delete an order with confirmation dialog
+🔢 Display pending orders count
+🔄 UI reacts automatically to data changes
+🧪 Fake API (in-memory list) for easy testing
+🎨 Built with Material 3 & Jetpack Compose
+
+
+🛠️ TECH STACK
+Kotlin
+Jetpack Compose
+Material 3
+MVVM Architecture
+Hilt (Dependency Injection)
+Kotlin Coroutines & StateFlow
+
+
+🧠 State Management
+Lists are exposed using StateFlow
+UI automatically updates when:
+Orders are created
+Orders are deleted
+Dialogs are controlled via UI state to avoid recomposition issues
+
+🖥️ SCREENS
+🏠 Orders Screen
+Displays all orders
+Shows pending orders count
+Floating Action Button to add a new order
+Delete confirmation dialog
+
+➕ Create Order Screen
+Reusable text fields
+Form validation
+Success dialog on save
+Navigates back to orders list
+
