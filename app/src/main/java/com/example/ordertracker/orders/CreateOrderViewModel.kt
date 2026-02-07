@@ -19,7 +19,7 @@ class CreateOrderViewModel @Inject constructor(private val orderRepository: Orde
         _uiState.value = _uiState.value.copy(customerName = value)
     }
 
-    fun onContactChange(value: String){
+    fun onContactChange(value: String) {
         _uiState.value = _uiState.value.copy(contact = value)
     }
 
@@ -39,7 +39,7 @@ class CreateOrderViewModel @Inject constructor(private val orderRepository: Orde
         _uiState.value = _uiState.value.copy(delivery = delivery)
     }
 
-    fun onStatusChange(status: Status){
+    fun onStatusChange(status: Status) {
         _uiState.value = _uiState.value.copy(status = status)
     }
 
@@ -55,18 +55,22 @@ class CreateOrderViewModel @Inject constructor(private val orderRepository: Orde
                     item = state.item,
                     units = state.units.toLong(),
                     price = state.price.toDouble(),
-                    status = Status.PENDING,
+                    status = state.status,
                     delivery = state.delivery,
                     contact = state.contact
                 )
 
                 orderRepository.createOrder(order)
-                onSuccess()
+                _uiState.value = _uiState.value.copy(showSuccessDialog = true)
 
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(error = "Invalid input")
             }
         }
+    }
+
+    fun onDismissSuccessDialog() {
+        _uiState.value = _uiState.value.copy(showSuccessDialog = false)
     }
 
 }

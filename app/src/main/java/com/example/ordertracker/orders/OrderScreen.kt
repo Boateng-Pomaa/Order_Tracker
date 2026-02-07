@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,10 +22,27 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @Composable
 fun OrderTrackerScreen(
-    viewModel: OrdersViewModel = hiltViewModel(),
-    onAddOrderClick: () -> Unit = {}
+    viewModel: OrdersViewModel = hiltViewModel(), onAddOrderClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val orderToDelete by viewModel.orderToDelete.collectAsState()
+
+    if (orderToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { viewModel.cancelDelete() },
+            title = { Text("Delete Order") },
+            text = { Text("Are you sure you want to delete this order?") },
+            confirmButton = {
+                TextButton(onClick = { viewModel.confirmDelete() }) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { viewModel.cancelDelete() }) {
+                    Text("Cancel")
+                }
+            })
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -58,7 +77,7 @@ fun OrderTrackerScreen(
                     Home(
                         orders = (uiState as OrderUiState.Success).orders,
                         onDeleteOrderClick = { order ->
-                            viewModel.deleteOrder(order)
+                            viewModel.requestDelete(order)
                         })
                 }
 

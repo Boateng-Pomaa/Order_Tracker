@@ -9,5 +9,6 @@ data class CreateOrderUiState(
     val delivery: Delivery = Delivery.DELIVERY,
     val status:Status = Status.PENDING,
     val isSaving: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val showSuccessDialog: Boolean = false
 )

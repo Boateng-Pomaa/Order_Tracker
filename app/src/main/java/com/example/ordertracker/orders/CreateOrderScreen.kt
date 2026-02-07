@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -18,6 +19,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -36,6 +38,24 @@ fun CreateOrder(
     viewModel: CreateOrderViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+
+    if (state.showSuccessDialog) {
+        AlertDialog(
+            onDismissRequest = { viewModel.onDismissSuccessDialog() },
+            title = { Text("Order Created") },
+            text = { Text("The order was created successfully.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.onDismissSuccessDialog()
+                        onOrderCreated() // navigate back
+                    }
+                ) {
+                    Text("OK")
+                }
+            }
+        )
+    }
 
     Scaffold(topBar = {
         TopAppBar(
