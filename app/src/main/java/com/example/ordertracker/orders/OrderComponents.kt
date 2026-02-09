@@ -1,13 +1,12 @@
 package com.example.ordertracker.orders
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,7 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.sharp.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -42,16 +41,13 @@ import androidx.compose.ui.unit.sp
 fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimary),
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.onSecondary,
-                shape = RoundedCornerShape(16.dp)
-            )
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth(),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondary)
+
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 11.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
@@ -112,14 +108,16 @@ fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(20.dp)
                 ) {
                     Text(
-                        text = order.delivery.toString(),
+                        text = order.delivery.label,
                         style = MaterialTheme.typography.bodySmall,
                         fontSize = 14.sp,
                         color = MaterialTheme.colorScheme.onSurface,
@@ -132,10 +130,10 @@ fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
                     )
 
                     Text(
-                        text = order.status.toString(),
+                        text = order.status.label,
                         style = MaterialTheme.typography.bodySmall,
                         fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.onTertiary,
                         modifier = Modifier
                             .background(
                                 color = MaterialTheme.colorScheme.tertiary,
@@ -151,7 +149,7 @@ fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
                 IconButton(
                     onClick = { onDeleteOrderClick() }) {
                     Icon(
-                        imageVector = Icons.Default.Delete,
+                        imageVector = Icons.Sharp.Delete,
                         contentDescription = "Delete order",
                         tint = MaterialTheme.colorScheme.error
                     )
@@ -168,21 +166,13 @@ fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
 fun PendingOrders(state: OrderUiState.Success) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimary),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp)
-            .fillMaxHeight(0.2F)
-            .border(
-                width = 2.dp,
-                color = MaterialTheme.colorScheme.onSecondary,
-                shape = RoundedCornerShape(16.dp)
-            )
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth(),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondary)
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-
-            Spacer(modifier = Modifier.height(4.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
@@ -191,7 +181,6 @@ fun PendingOrders(state: OrderUiState.Success) {
                     text = "${state.pendingCount}",
                     style = MaterialTheme.typography.headlineLarge,
                     color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.padding(16.dp)
                 )
 
                 Text(
@@ -202,9 +191,9 @@ fun PendingOrders(state: OrderUiState.Success) {
 
                         .background(
                             color = MaterialTheme.colorScheme.tertiary,
-                            shape = RoundedCornerShape(50),
+                            shape = RoundedCornerShape(12.dp),
                         )
-                        .padding(6.dp)
+                        .padding(start = 12.dp, end = 12.dp)
                         .align(Alignment.CenterVertically)
 
 

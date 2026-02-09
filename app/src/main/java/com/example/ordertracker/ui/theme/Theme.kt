@@ -11,9 +11,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = ScreenBackground,
-    secondary = Status,
-    tertiary = Cards
+    primary = Buttons,
+    secondary = Titles,
+    tertiary = Status,
+    background = ScreenBackground,
+    onPrimary = Cards,
+    onSurface = ItemsText,
+    onBackground = RoundTextBackground,
+    onSecondary = CardBorders
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -24,7 +29,9 @@ private val LightColorScheme = lightColorScheme(
     onPrimary = Cards,
     onSurface = ItemsText,
     onBackground = RoundTextBackground,
-    onSecondary = CardBorders
+    onSecondary = CardBorders,
+    onTertiary = StatusText
+
 
 
 
