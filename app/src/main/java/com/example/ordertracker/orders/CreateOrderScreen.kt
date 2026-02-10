@@ -4,11 +4,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
@@ -38,6 +41,8 @@ fun CreateOrder(
     viewModel: CreateOrderViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
+    val scrollState = rememberScrollState()
+
 
     if (state.showSuccessDialog) {
         AlertDialog(
@@ -49,63 +54,44 @@ fun CreateOrder(
                     onClick = {
                         viewModel.onDismissSuccessDialog()
                         onOrderCreated() // navigate back
-                    }
-                ) {
+                    }) {
                     Text("OK")
                 }
-            }
-        )
+            })
     }
 
-    Scaffold(topBar = {
-        TopAppBar(
-            title = {
-                Box(
-                    modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "New Order", style = MaterialTheme.typography.titleLarge
-                    )
-                }
-            }, navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                titleContentColor = MaterialTheme.colorScheme.secondary,
-                navigationIconContentColor = MaterialTheme.colorScheme.secondary
-            )
-        )
-    }, bottomBar = {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 28.dp)
-        ) {
-            Button(
-                onClick = { viewModel.createOrder(onOrderCreated) },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(14.dp)
-            ) {
-                Text(
-                    text = "Save Order", style = MaterialTheme.typography.titleMedium
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Box(
+                        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "New Order", style = MaterialTheme.typography.titleLarge
+                        )
+                    }
+                }, navigationIcon = {
+                    IconButton(onClick = onBackClick) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                }, colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.background,
+                    titleContentColor = MaterialTheme.colorScheme.secondary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.secondary
                 )
-            }
-        }
-    }
+            )
+        },
 
-    ) { paddingValues ->
+        ) { paddingValues ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(scrollState)
                 .padding(paddingValues),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
@@ -116,14 +102,16 @@ fun CreateOrder(
                 value = state.customerName,
                 onValueChange = viewModel::onCustomerNameChange,
                 label = "Full Name",
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                error = state.customerNameError
             )
 
             AppTextField(
                 value = state.contact,
                 onValueChange = viewModel::onContactChange,
                 label = "Contact Number",
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                error = state.contactError
             )
             SectionHeader("Order Details")
 
@@ -131,8 +119,8 @@ fun CreateOrder(
                 value = state.item,
                 onValueChange = viewModel::onItemChange,
                 label = "Item Description",
-                singleLine = false,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
+                singleLine = false
             )
 
             Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -142,7 +130,8 @@ fun CreateOrder(
                     label = "Price (Ghc)",
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 16.dp, end = 16.dp)
+                        .padding(start = 16.dp, end = 16.dp),
+                    error = state.priceError
                 )
                 AppTextField(
                     value = state.units,
@@ -150,7 +139,8 @@ fun CreateOrder(
                     label = "Units",
                     modifier = Modifier
                         .weight(1f)
-                        .padding(start = 16.dp, end = 16.dp)
+                        .padding(start = 16.dp, end = 16.dp),
+                    error = state.unitsError
                 )
             }
 
@@ -165,7 +155,22 @@ fun CreateOrder(
             StatusDropdown(
                 selected = state.status, onSelected = viewModel::onStatusChange
             )
-        }
-    }
 
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = { viewModel.createOrder() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 16.dp),
+                shape = RoundedCornerShape(14.dp)
+            ) {
+                Text(text = "Save Order", style = MaterialTheme.typography.titleMedium)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+    }
 }

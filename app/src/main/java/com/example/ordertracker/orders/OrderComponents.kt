@@ -22,10 +22,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -248,6 +250,7 @@ fun AppTextField(
     onValueChange: (String) -> Unit,
     label: String,
     modifier: Modifier = Modifier,
+    error: String? = null,
     singleLine: Boolean = true
 ) {
     Column(modifier = modifier) {
@@ -264,9 +267,18 @@ fun AppTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = MaterialTheme.colorScheme.onPrimary),
-            label = { Text(text = label) },
+            isError = error != null,
             singleLine = singleLine,
         )
+
+        if (error != null) {
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
+            )
+        }
     }
 }
 
@@ -294,9 +306,14 @@ fun DeliverySelector(
                 label = { Text(delivery.name.replace("_", " ")) },
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 16.dp, end = 16.dp)
-                    .background(color = MaterialTheme.colorScheme.onPrimary)
+                    .padding(start = 16.dp, end = 16.dp),
+                colors = FilterChipDefaults.filterChipColors(
+                    containerColor = MaterialTheme.colorScheme.onPrimary,
+                    selectedContainerColor = MaterialTheme.colorScheme.primary,
+                    labelColor = MaterialTheme.colorScheme.onSurface,
+                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
 
+                )
             )
         }
     }
@@ -310,10 +327,6 @@ fun StatusDropdown(
     var expanded by remember { mutableStateOf(false) }
 
     Column {
-        Text(
-            text = "Status", style = MaterialTheme.typography.labelMedium
-        )
-        Spacer(modifier = Modifier.height(6.dp))
 
         ExposedDropdownMenuBox(
             expanded = expanded, onExpandedChange = { expanded = !expanded }) {
@@ -327,13 +340,20 @@ fun StatusDropdown(
                 modifier = Modifier
                     .menuAnchor()
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp)
-                    .background(color = MaterialTheme.colorScheme.onPrimary),
-                shape = RoundedCornerShape(12.dp)
+                    .padding(start = 16.dp, end = 16.dp),
+                shape = RoundedCornerShape(12.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                )
             )
 
             ExposedDropdownMenu(
-                expanded = expanded, onDismissRequest = { expanded = false }) {
+                expanded = expanded,
+                modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary),
+                onDismissRequest = { expanded = false }) {
                 Status.entries.forEach { status ->
                     DropdownMenuItem(text = { Text(status.name) }, onClick = {
                         onSelected(status)
