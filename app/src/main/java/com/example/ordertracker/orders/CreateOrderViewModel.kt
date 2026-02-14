@@ -13,110 +13,123 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateOrderViewModel @Inject constructor(private val orderRepository: OrderRepository) :
     ViewModel() {
-    private val _uiState = MutableStateFlow(CreateOrderUiState())
-    val uiState: StateFlow<CreateOrderUiState> = _uiState
+    private val _uiState = MutableStateFlow(CreateOrdersScreenState())
+    val uiState: StateFlow<CreateOrdersScreenState> = _uiState
 
-    fun onCustomerNameChange(value: String) {
-        val error = validateCustomerName(value)
-        _uiState.update {
-            it.copy(
-                customerNameError = error,
-                customerName = value,
-                isFormValid = isFormValid(it.copy(customerName = value, customerNameError = error))
-            )
+    fun onCustomerNameChange(index: Int, value: String) {
+        _uiState.update { current ->
+            if (index >= current.orders.size) return@update current
+            val updatedOrders = current.orders.toMutableList()
+            val order = updatedOrders[index]
+            val error = validateCustomerName(value)
+            updatedOrders[index] = order.copy(customerName = value, customerNameError = error)
+            current.copy(orders = updatedOrders)
         }
     }
 
-    fun onContactChange(value: String) {
-
-        val error = validateContact(value)
-        _uiState.update {
-            it.copy(
-                contact = value, contactError = error, isFormValid = isFormValid(
-                    it.copy(
-                        contact = value, contactError = error
-                    )
-                )
-
-            )
+    fun onContactChange(index: Int, value: String) {
+        _uiState.update { current ->
+            if (index >= current.orders.size) return@update current
+            val updatedOrders = current.orders.toMutableList()
+            val order = updatedOrders[index]
+            val error = validateContact(value)
+            updatedOrders[index] = order.copy(contact = value, contactError = error)
+            current.copy(orders = updatedOrders)
         }
     }
 
-    fun onItemChange(value: String) {
-        _uiState.value = _uiState.value.copy(item = value)
-    }
-
-    fun onUnitsChange(value: String) {
-        _uiState.update {
-            val error = validateUnits(value)
-            it.copy(
-                unitsError = error,
-                units = value,
-                isFormValid = isFormValid(it.copy(units = value, unitsError = error))
-            )
+    fun onItemChange(index: Int, value: String) {
+        _uiState.update { current ->
+            if (index >= current.orders.size) return@update current
+            val updatedOrders = current.orders.toMutableList()
+            val order = updatedOrders[index]
+            updatedOrders[index] = order.copy(item = value)
+            current.copy(orders = updatedOrders)
         }
     }
 
-    fun onPriceChange(value: String) {
-        _uiState.update {
-            val error = validatePrice(value)
-            it.copy(
-                priceError = error,
-                price = value,
-                isFormValid = isFormValid(it.copy(price = value, priceError = error))
-            )
-
+    fun onUnitsChange(index: Int, value: String) {
+        if (value.all { it.isDigit() }) {
+            _uiState.update { current ->
+                if (index >= current.orders.size) return@update current
+                val updatedOrders = current.orders.toMutableList()
+                val order = updatedOrders[index]
+                updatedOrders[index] = order.copy(units = value)
+                current.copy(orders = updatedOrders)
+            }
         }
     }
 
-    fun onDeliveryChange(delivery: Delivery) {
-        _uiState.value = _uiState.value.copy(delivery = delivery)
+    fun onPriceChange(index: Int, value: String) {
+        if (value.matches(Regex("^\\d*\\.?\\d*$"))) {
+            _uiState.update { current ->
+                if (index >= current.orders.size) return@update current
+                val updatedOrders = current.orders.toMutableList()
+                val order = updatedOrders[index]
+                val error = validatePrice(value)
+                updatedOrders[index] = order.copy(price = value, priceError = error)
+                current.copy(orders = updatedOrders)
+            }
+        }
     }
 
-    fun onStatusChange(status: Status) {
-        _uiState.value = _uiState.value.copy(status = status)
+    fun onDeliveryChange(index: Int, delivery: Delivery) {
+        _uiState.update { current ->
+            if (index >= current.orders.size) return@update current
+            val updatedOrders = current.orders.toMutableList()
+            val order = updatedOrders[index]
+            updatedOrders[index] = order.copy(delivery = delivery)
+            current.copy(orders = updatedOrders)
+        }
+    }
+
+    fun onStatusChange(index: Int, status: Status) {
+        _uiState.update { current ->
+            if (index >= current.orders.size) return@update current
+            val updatedOrders = current.orders.toMutableList()
+            val order = updatedOrders[index]
+            updatedOrders[index] = order.copy(status = status)
+            current.copy(orders = updatedOrders)
+        }
     }
 
 
     fun createOrder() {
         viewModelScope.launch {
             try {
-                val state = _uiState.value
+                val screenState = _uiState.value
 
-                val order = OrderModel(
-                    id = System.currentTimeMillis(),
-                    customerName = state.customerName,
-                    item = state.item,
-                    units = state.units.toLong(),
-                    price = state.price.toDouble(),
-                    status = state.status,
-                    delivery = state.delivery,
-                    contact = state.contact
-                )
+                screenState.orders.forEachIndexed { index, orderState ->
 
-                orderRepository.createOrder(order)
-                _uiState.value = _uiState.value.copy(showSuccessDialog = true)
+                    val order = OrderModel(
+                        id = System.currentTimeMillis() + index,
+                        customerName = orderState.customerName,
+                        item = orderState.item,
+                        units = orderState.units.toLongOrNull() ?: 0L,
+                        price = orderState.price.toDoubleOrNull() ?: 0.0,
+                        status = orderState.status,
+                        delivery = orderState.delivery,
+                        contact = orderState.contact
+                    )
+
+                    orderRepository.createOrder(order)
+                }
+
+                _uiState.update { it.copy(showSuccessDialog = true) }
 
             } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(error = "Invalid input")
+                _uiState.update {
+                    it.copy(error = "Invalid input")
+                }
             }
         }
     }
 
     fun onDismissSuccessDialog() {
-        _uiState.value = _uiState.value.copy(showSuccessDialog = false)
+        _uiState.update {
+            it.copy(showSuccessDialog = false)
+        }
     }
-
-    private fun isFormValid(state: CreateOrderUiState): Boolean {
-        return listOf(
-            state.customerNameError,
-            state.contactError,
-            state.itemError,
-            state.priceError,
-            state.unitsError
-        ).all { it == null } && state.customerName.isNotBlank() && state.contact.isNotBlank() && state.item.isNotBlank()
-    }
-
 
     private fun validateCustomerName(name: String): String? =
         if (name.isBlank()) "Full name is required" else null
@@ -124,13 +137,37 @@ class CreateOrderViewModel @Inject constructor(private val orderRepository: Orde
     private fun validateContact(contact: String): String? =
         if (contact.length < 10) "Enter a valid phone number" else null
 
-    private fun validatePrice(price: String): String = price.toDoubleOrNull()?.let {
-        if (it <= 0) "Price must be greater than 0" else null
-    } ?: "Enter a valid price"
+    private fun validatePrice(price: String): String? {
+        val priceValue = price.toDoubleOrNull()
+        return when {
+            priceValue == null -> "Enter a valid price"
+            priceValue <= 0 -> "Price must be greater than 0"
+            else -> null
+        }
+    }
 
-    private fun validateUnits(units: String): String = units.toIntOrNull()?.let {
-        if (it <= 0) "Units must be at least 1" else null
-    } ?: "Enter a valid number"
+    private fun validateUnits(units: String): String? {
+        val unitsValue = units.toIntOrNull()
+        return when {
+            unitsValue == null -> "Enter a valid number"
+            unitsValue <= 0 -> "Units must be at least 1"
+            else -> null
+        }
+    }
 
+    fun addOrder() {
+        _uiState.update { current ->
+            current.copy(
+                orders = current.orders + CreateOrderUiState()
+            )
+        }
+    }
 
+    fun removeLastOrder() {
+        _uiState.update { current ->
+            if (current.orders.size > 1) {
+                current.copy(orders = current.orders.dropLast(1))
+            } else current
+        }
+    }
 }

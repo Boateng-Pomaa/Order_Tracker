@@ -24,8 +24,7 @@ android {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
             )
         }
     }
@@ -50,6 +49,8 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.foundation.layout)
     implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.ui.test)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -63,13 +64,15 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     ksp(libs.hilt.compiler)
+
+    implementation(libs.androidx.compose.ui.text.google.fonts)
+
 }
 
 configurations {
     all {
         exclude(
-            group = "com.google.googlejavaformat",
-            "google-java-format"
+            group = "com.google.googlejavaformat", "google-java-format"
         )
     }
 }

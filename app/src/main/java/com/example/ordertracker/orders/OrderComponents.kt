@@ -9,12 +9,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.sharp.Delete
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -30,14 +33,21 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusEvent
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.test.isFocused
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.ordertracker.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
@@ -56,7 +66,7 @@ fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
             ) {
                 Text(
                     text = order.customerName,
-                    fontSize = 20.sp,
+                    fontSize = 22.5.sp,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.weight(1f)
@@ -64,7 +74,7 @@ fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
 
                 Text(
                     text = "Ghc${order.price}",
-                    fontSize = 20.sp,
+                    fontSize = 22.5.sp,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier.weight(1f)
@@ -75,12 +85,12 @@ fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(20.dp)
+                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = order.item,
-                    fontSize = 16.sp,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .background(
@@ -93,8 +103,7 @@ fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
 
                 Text(
                     text = "x${order.units}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontSize = 16.sp,
+                    style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier
                         .background(
@@ -151,9 +160,10 @@ fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
                 IconButton(
                     onClick = { onDeleteOrderClick() }) {
                     Icon(
-                        imageVector = Icons.Sharp.Delete,
+                        painter = painterResource(id = R.drawable.img_delete),
+                        modifier = Modifier.size(24.dp),
                         contentDescription = "Delete order",
-                        tint = MaterialTheme.colorScheme.error
+                        tint = MaterialTheme.colorScheme.surface
                     )
                 }
 
@@ -181,21 +191,23 @@ fun PendingOrders(state: OrderUiState.Success) {
             ) {
                 Text(
                     text = "${state.pendingCount}",
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.secondary,
+                    style = MaterialTheme.typography.titleLarge,
+                    color = MaterialTheme.colorScheme.onTertiary,
                 )
 
                 Text(
                     text = "Pending Delivery",
                     style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 12.sp,
+
+                    color = MaterialTheme.colorScheme.secondary,
                     modifier = Modifier
 
                         .background(
                             color = MaterialTheme.colorScheme.tertiary,
                             shape = RoundedCornerShape(12.dp),
                         )
-                        .padding(start = 12.dp, end = 12.dp)
+                        .padding(start = 10.dp, end = 10.dp, top = 4.dp, bottom = 4.dp)
                         .align(Alignment.CenterVertically)
 
 
@@ -251,8 +263,11 @@ fun AppTextField(
     label: String,
     modifier: Modifier = Modifier,
     error: String? = null,
-    singleLine: Boolean = true
+    singleLine: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val scope = rememberCoroutineScope()
     Column(modifier = modifier) {
         Text(
             text = label,
@@ -268,6 +283,7 @@ fun AppTextField(
                 .fillMaxWidth()
                 .background(color = MaterialTheme.colorScheme.onPrimary),
             isError = error != null,
+            keyboardOptions = keyboardOptions,
             singleLine = singleLine,
         )
 
@@ -288,7 +304,7 @@ fun SectionHeader(title: String) {
         text = title,
         style = MaterialTheme.typography.labelLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(12.dp)
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
     )
 }
 
@@ -326,7 +342,7 @@ fun StatusDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column {
+    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
 
         ExposedDropdownMenuBox(
             expanded = expanded, onExpandedChange = { expanded = !expanded }) {
@@ -339,8 +355,7 @@ fun StatusDropdown(
                 },
                 modifier = Modifier
                     .menuAnchor()
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp),
+                    .fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
@@ -364,6 +379,7 @@ fun StatusDropdown(
         }
     }
 }
+
 
 
 

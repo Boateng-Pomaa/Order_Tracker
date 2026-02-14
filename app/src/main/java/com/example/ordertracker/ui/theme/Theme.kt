@@ -30,7 +30,9 @@ private val LightColorScheme = lightColorScheme(
     onSurface = ItemsText,
     onBackground = RoundTextBackground,
     onSecondary = CardBorders,
-    onTertiary = StatusText
+    onTertiary = StatusText,
+    surface = DeleteBackground
+
 
 
 

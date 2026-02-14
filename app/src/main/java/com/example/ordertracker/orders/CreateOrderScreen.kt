@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -30,7 +32,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -61,11 +65,15 @@ fun CreateOrder(
     }
 
     Scaffold(
+        modifier = Modifier.imePadding(),
         topBar = {
             TopAppBar(
                 title = {
                     Box(
-                        modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 40.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "New Order", style = MaterialTheme.typography.titleLarge
@@ -92,85 +100,137 @@ fun CreateOrder(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(scrollState)
-                .padding(paddingValues),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(paddingValues)
         ) {
+            state.orders.forEachIndexed { index, orderState ->
 
-            SectionHeader("Customer Details")
-
-            AppTextField(
-                value = state.customerName,
-                onValueChange = viewModel::onCustomerNameChange,
-                label = "Full Name",
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                error = state.customerNameError
-            )
-
-            AppTextField(
-                value = state.contact,
-                onValueChange = viewModel::onContactChange,
-                label = "Contact Number",
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                error = state.contactError
-            )
-            SectionHeader("Order Details")
-
-            AppTextField(
-                value = state.item,
-                onValueChange = viewModel::onItemChange,
-                label = "Item Description",
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                singleLine = false
-            )
-
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                AppTextField(
-                    value = state.price,
-                    onValueChange = viewModel::onPriceChange,
-                    label = "Price (Ghc)",
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 16.dp, end = 16.dp),
-                    error = state.priceError
+                Text(
+                    text = "Order ${index + 1}",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp)
                 )
-                AppTextField(
-                    value = state.units,
-                    onValueChange = viewModel::onUnitsChange,
-                    label = "Units",
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 16.dp, end = 16.dp),
-                    error = state.unitsError
+
+                OrderForm(
+                    state = orderState, index = index, viewModel = viewModel
                 )
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
 
-            SectionHeader("Delivery Options")
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Button(
+                    onClick = { viewModel.addOrder() },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Add Another Order")
+                }
+                Button(
+                    onClick = { viewModel.removeLastOrder() },
+                    enabled = state.orders.size > 1,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Remove Order")
+                }
+            }
 
-            DeliverySelector(
-                selected = state.delivery, onSelected = viewModel::onDeliveryChange
-            )
 
-            SectionHeader("Delivery Status")
-
-            StatusDropdown(
-                selected = state.status, onSelected = viewModel::onStatusChange
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Button(
                 onClick = { viewModel.createOrder() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp)
-                    .padding(horizontal = 16.dp),
-                shape = RoundedCornerShape(14.dp)
+                    .padding(horizontal = 14.dp),
+                shape = RoundedCornerShape(8.dp)
             ) {
-                Text(text = "Save Order", style = MaterialTheme.typography.titleMedium)
+                Text(
+                    text = "Save Order",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(10.dp))
         }
 
     }
+}
+
+@Composable
+fun OrderForm(
+    state: CreateOrderUiState, index: Int, viewModel: CreateOrderViewModel
+) {
+
+    SectionHeader("Customer Details")
+
+    AppTextField(
+        value = state.customerName,
+        onValueChange = { viewModel.onCustomerNameChange(index, it) },
+        label = "Full Name",
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        error = state.customerNameError
+    )
+
+    AppTextField(
+        value = state.contact,
+        onValueChange = { viewModel.onContactChange(index, it) },
+        label = "Contact Number",
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        error = state.contactError
+    )
+
+    SectionHeader("Order Details")
+
+    AppTextField(
+        value = state.item,
+        onValueChange = { viewModel.onItemChange(index, it) },
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        label = "Item Description"
+    )
+
+    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+
+        AppTextField(
+            value = state.price,
+            onValueChange = { viewModel.onPriceChange(index, it) },
+            label = "Price (Ghc)",
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal
+            ),
+            error = state.priceError
+        )
+
+        AppTextField(
+            value = state.units,
+            onValueChange = { viewModel.onUnitsChange(index, it) },
+            label = "Units",
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp, vertical = 5.dp),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            ),
+            error = state.unitsError
+        )
+    }
+
+    SectionHeader("Delivery Options")
+
+    DeliverySelector(
+        selected = state.delivery, onSelected = { viewModel.onDeliveryChange(index, it) })
+
+    SectionHeader("Delivery Status")
+
+    StatusDropdown(
+        selected = state.status, onSelected = { viewModel.onStatusChange(index, it) })
 }
