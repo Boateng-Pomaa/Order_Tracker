@@ -1,4 +1,7 @@
-package com.example.ordertracker.orders
+package com.example.ordertracker.uistate
+
+import com.example.ordertracker.orders.OrderModel
+import com.example.ordertracker.orders.Status
 
 sealed interface OrderUiState {
     object Loading : OrderUiState
@@ -9,5 +12,3 @@ sealed interface OrderUiState {
 
     data class Error(val message: String) : OrderUiState
 }
-
-

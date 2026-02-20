@@ -13,6 +13,10 @@ interface OrderApi {
     suspend fun getPendingOrders(): List<OrderModel>
 
     suspend fun deleteOrder(order: OrderModel)
+
+    suspend fun getOrder(orderId: Long): OrderModel?
+
+    suspend fun updateOrder(order: OrderModel)
 }
 
 

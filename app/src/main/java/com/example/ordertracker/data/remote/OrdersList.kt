@@ -90,4 +90,18 @@ class OrdersList : OrderApi {
         _orders.value = _orders.value.filterNot { it.id == order.id }
 
     }
+
+    override suspend fun getOrder(orderId: Long): OrderModel? {
+        return _orders.value.find { it.id == orderId }
+
+    }
+
+    override suspend fun updateOrder(order: OrderModel) {
+        val currentOrders = _orders.value.toMutableList()
+        val index = currentOrders.indexOfFirst { it.id == order.id }
+        if (index != -1) {
+            currentOrders[index] = order
+            _orders.value = currentOrders
+        }
+    }
 }

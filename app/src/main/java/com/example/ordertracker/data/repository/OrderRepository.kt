@@ -12,4 +12,8 @@ interface OrderRepository {
    suspend fun  deleteOrder(order: OrderModel)
     suspend fun createOrder(order: OrderModel)
 
+    suspend fun getOrder(orderId: Long): OrderModel?
+
+    suspend fun updateOrder(order: OrderModel)
+
 }

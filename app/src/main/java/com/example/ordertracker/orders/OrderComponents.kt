@@ -2,6 +2,7 @@ package com.example.ordertracker.orders
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -9,13 +10,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.relocation.BringIntoViewRequester
-import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
@@ -33,28 +31,30 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.test.isFocused
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ordertracker.R
-import kotlinx.coroutines.launch
+import com.example.ordertracker.uistate.OrderDetailsUiState
+import com.example.ordertracker.uistate.OrderUiState
 
 @Composable
-fun OrderItems(order: OrderModel, onDeleteOrderClick: () -> Unit) {
+fun OrderItems(
+    order: OrderModel, onDeleteOrderClick: () -> Unit, onOrderClick: (Long) -> Unit = {}
+) {
     Card(
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimary),
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = { onOrderClick(order.id) }),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondary)
 
     ) {
@@ -220,7 +220,11 @@ fun PendingOrders(state: OrderUiState.Success) {
 
 
 @Composable
-fun Home(orders: List<OrderModel>, onDeleteOrderClick: (OrderModel) -> Unit) {
+fun Home(
+    orders: List<OrderModel>,
+    onDeleteOrderClick: (OrderModel) -> Unit,
+    onOrderClick: (Long) -> Unit = {}
+) {
 
     LazyColumn(
         contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -248,7 +252,7 @@ fun Home(orders: List<OrderModel>, onDeleteOrderClick: (OrderModel) -> Unit) {
             items = orders, key = { it.id }) { order ->
             OrderItems(order = order, onDeleteOrderClick = {
                 onDeleteOrderClick(order)
-            }
+            }, onOrderClick = { onOrderClick(order.id) }
 
             )
         }
@@ -264,10 +268,9 @@ fun AppTextField(
     modifier: Modifier = Modifier,
     error: String? = null,
     singleLine: Boolean = true,
+    enabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
-    val bringIntoViewRequester = remember { BringIntoViewRequester() }
-    val scope = rememberCoroutineScope()
     Column(modifier = modifier) {
         Text(
             text = label,
@@ -285,7 +288,9 @@ fun AppTextField(
             isError = error != null,
             keyboardOptions = keyboardOptions,
             singleLine = singleLine,
-        )
+            enabled = enabled,
+
+            )
 
         if (error != null) {
             Text(
@@ -310,7 +315,7 @@ fun SectionHeader(title: String) {
 
 @Composable
 fun DeliverySelector(
-    selected: Delivery, onSelected: (Delivery) -> Unit
+    selected: Delivery, onSelected: (Delivery) -> Unit, enabled: Boolean = true
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -323,6 +328,7 @@ fun DeliverySelector(
                 modifier = Modifier
                     .weight(1f)
                     .padding(start = 16.dp, end = 16.dp),
+                enabled = enabled,
                 colors = FilterChipDefaults.filterChipColors(
                     containerColor = MaterialTheme.colorScheme.onPrimary,
                     selectedContainerColor = MaterialTheme.colorScheme.primary,
@@ -338,14 +344,14 @@ fun DeliverySelector(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StatusDropdown(
-    selected: Status, onSelected: (Status) -> Unit
+    selected: Status, onSelected: (Status) -> Unit, enabled: Boolean = true
 ) {
     var expanded by remember { mutableStateOf(false) }
 
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
 
         ExposedDropdownMenuBox(
-            expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+            expanded = expanded, onExpandedChange = { expanded = if (enabled) !expanded else false }) {
             OutlinedTextField(
                 value = selected.name,
                 onValueChange = {},
@@ -357,6 +363,7 @@ fun StatusDropdown(
                     .menuAnchor()
                     .fillMaxWidth(),
                 shape = RoundedCornerShape(12.dp),
+                enabled = enabled,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
                     unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
@@ -381,8 +388,93 @@ fun StatusDropdown(
 }
 
 
+@Composable
+fun OrderFormContent(
+    state: OrderDetailsUiState,
+    onCustomerNameChange: (String) -> Unit,
+    onContactChange: (String) -> Unit,
+    onItemChange: (String) -> Unit,
+    onPriceChange: (String) -> Unit,
+    onUnitsChange: (String) -> Unit,
+    onDeliveryChange: (Delivery) -> Unit,
+    onStatusChange: (Status) -> Unit
+) {
 
+    val order = state.order ?: return
 
+    SectionHeader("Customer Details")
 
+    AppTextField(
+        value = order.customerName,
+        onValueChange = onCustomerNameChange,
+        label = "Full Name",
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        enabled = state.isEditing
+    )
 
+    AppTextField(
+        value = order.contact,
+        onValueChange = onContactChange,
+        label = "Contact Number",
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        enabled = state.isEditing
+    )
 
+    SectionHeader("Order Details")
+
+    AppTextField(
+        value = order.item,
+        onValueChange = onItemChange,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        label = "Item Description",
+        enabled = state.isEditing
+    )
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+
+        AppTextField(
+            value = order.price.toString(),
+            onValueChange = onPriceChange,
+            label = "Price (Ghc)",
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Decimal
+            ),
+            enabled = state.isEditing
+        )
+
+        AppTextField(
+            value = order.units.toString(),
+            onValueChange = onUnitsChange,
+            label = "Units",
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 16.dp, vertical = 5.dp),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Number
+            ),
+            enabled = state.isEditing
+        )
+    }
+
+    SectionHeader("Delivery Options")
+
+    DeliverySelector(
+        selected = order.delivery,
+        onSelected = onDeliveryChange,
+        enabled = state.isEditing
+    )
+
+    SectionHeader("Delivery Status")
+
+    StatusDropdown(
+        selected = order.status,
+        onSelected = onStatusChange,
+        enabled = state.isEditing
+    )
+}

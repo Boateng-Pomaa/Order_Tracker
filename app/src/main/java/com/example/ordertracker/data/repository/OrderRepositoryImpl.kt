@@ -21,4 +21,13 @@ class OrderRepositoryImpl @Inject constructor(private val orderApi: OrderApi) : 
         orderApi.createOrder(order)
     }
 
+    override suspend fun getOrder(orderId: Long): OrderModel? {
+        return orderApi.getOrder(orderId)
+
+    }
+
+    override suspend fun updateOrder(order: OrderModel) {
+        orderApi.updateOrder(order)
+    }
+
 }

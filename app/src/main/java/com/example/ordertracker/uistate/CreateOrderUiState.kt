@@ -1,4 +1,7 @@
-package com.example.ordertracker.orders
+package com.example.ordertracker.uistate
+
+import com.example.ordertracker.orders.Delivery
+import com.example.ordertracker.orders.Status
 
 data class CreateOrderUiState(
     val customerName: String = "",
@@ -7,7 +10,7 @@ data class CreateOrderUiState(
     val units: String = "",
     val price: String = "",
     val delivery: Delivery = Delivery.DELIVERY,
-    val status:Status = Status.PENDING,
+    val status: Status = Status.PENDING,
     val isSaving: Boolean = false,
     val error: String? = null,
 

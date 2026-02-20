@@ -65,8 +65,6 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     ksp(libs.hilt.compiler)
 
-    implementation(libs.androidx.compose.ui.text.google.fonts)
-
 }
 
 configurations {

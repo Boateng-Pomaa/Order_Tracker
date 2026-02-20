@@ -1,4 +1,4 @@
-package com.example.ordertracker.orders
+package com.example.ordertracker.screens
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +36,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.ordertracker.orders.AppTextField
+import com.example.ordertracker.orders.DeliverySelector
+import com.example.ordertracker.orders.SectionHeader
+import com.example.ordertracker.orders.StatusDropdown
+import com.example.ordertracker.uistate.CreateOrderUiState
+import com.example.ordertracker.viewmodels.CreateOrderViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -69,28 +75,28 @@ fun CreateOrder(
         topBar = {
             TopAppBar(
                 title = {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(end = 40.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "New Order", style = MaterialTheme.typography.titleLarge
-                        )
-                    }
-                }, navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }, colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.background,
-                    titleContentColor = MaterialTheme.colorScheme.secondary,
-                    navigationIconContentColor = MaterialTheme.colorScheme.secondary
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(end = 40.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "New Order", style = MaterialTheme.typography.titleLarge
+                    )
+                }
+            }, navigationIcon = {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            }, colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = MaterialTheme.colorScheme.background,
+                titleContentColor = MaterialTheme.colorScheme.secondary,
+                navigationIconContentColor = MaterialTheme.colorScheme.secondary
+            )
             )
         },
 
@@ -124,8 +130,7 @@ fun CreateOrder(
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Button(
-                    onClick = { viewModel.addOrder() },
-                    modifier = Modifier.weight(1f)
+                    onClick = { viewModel.addOrder() }, modifier = Modifier.weight(1f)
                 ) {
                     Text("Add Another Order")
                 }
@@ -195,7 +200,10 @@ fun OrderForm(
         label = "Item Description"
     )
 
-    Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
 
         AppTextField(
             value = state.price,

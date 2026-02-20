@@ -1,14 +1,20 @@
-package com.example.ordertracker.orders
+package com.example.ordertracker.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ordertracker.data.repository.OrderRepository
+import com.example.ordertracker.uistate.CreateOrdersScreenState
+import com.example.ordertracker.orders.Delivery
+import com.example.ordertracker.orders.OrderModel
+import com.example.ordertracker.orders.Status
+import com.example.ordertracker.uistate.CreateOrderUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.plus
 
 @HiltViewModel
 class CreateOrderViewModel @Inject constructor(private val orderRepository: OrderRepository) :
@@ -142,15 +148,6 @@ class CreateOrderViewModel @Inject constructor(private val orderRepository: Orde
         return when {
             priceValue == null -> "Enter a valid price"
             priceValue <= 0 -> "Price must be greater than 0"
-            else -> null
-        }
-    }
-
-    private fun validateUnits(units: String): String? {
-        val unitsValue = units.toIntOrNull()
-        return when {
-            unitsValue == null -> "Enter a valid number"
-            unitsValue <= 0 -> "Units must be at least 1"
             else -> null
         }
     }

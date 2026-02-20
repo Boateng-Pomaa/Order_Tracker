@@ -1,4 +1,4 @@
-package com.example.ordertracker.orders
+package com.example.ordertracker.uistate
 
 data class CreateOrdersScreenState(
     val orders: List<CreateOrderUiState> = listOf(CreateOrderUiState()),
