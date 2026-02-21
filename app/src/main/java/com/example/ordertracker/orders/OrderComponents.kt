@@ -351,7 +351,8 @@ fun StatusDropdown(
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
 
         ExposedDropdownMenuBox(
-            expanded = expanded, onExpandedChange = { expanded = if (enabled) !expanded else false }) {
+            expanded = expanded,
+            onExpandedChange = { expanded = if (enabled) !expanded else false }) {
             OutlinedTextField(
                 value = selected.name,
                 onValueChange = {},
@@ -465,16 +466,13 @@ fun OrderFormContent(
     SectionHeader("Delivery Options")
 
     DeliverySelector(
-        selected = order.delivery,
-        onSelected = onDeliveryChange,
-        enabled = state.isEditing
+        selected = order.delivery, onSelected = onDeliveryChange, enabled = state.isEditing
     )
 
     SectionHeader("Delivery Status")
 
     StatusDropdown(
-        selected = order.status,
-        onSelected = onStatusChange,
-        enabled = state.isEditing
+        selected = order.status, onSelected = onStatusChange, enabled = state.isEditing
     )
 }
+
