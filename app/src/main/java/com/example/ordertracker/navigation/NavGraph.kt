@@ -16,15 +16,13 @@ fun NavGraph() {
     NavHost(navController = navController, startDestination = Routes.ORDERS) {
         composable(Routes.ORDERS) {
             OrderTrackerScreen(
-                onAddOrderClick = { navController.navigate(Routes.CREATE_ORDER) },
                 onOrderClick = { orderId ->
-                    navController.navigate(Routes.ORDER_DETAILS.replace("{orderId}", orderId.toString()))
+                    navController.navigate(
+                        Routes.ORDER_DETAILS.replace(
+                            "{orderId}", orderId.toString()
+                        )
+                    )
                 })
-        }
-        composable(Routes.CREATE_ORDER) {
-            CreateOrder(
-                onBackClick = { navController.popBackStack() },
-                onOrderCreated = { navController.popBackStack() })
         }
 
         composable(
@@ -32,8 +30,7 @@ fun NavGraph() {
                 navArgument("orderId") { type = NavType.LongType })
         ) {
             OrderDetailsScreen(
-                onBackClick = { navController.popBackStack() }
-            )
+                onBackClick = { navController.popBackStack() })
         }
 
     }
@@ -45,5 +42,8 @@ object Routes {
     const val CREATE_ORDER = "create_order"
 
     const val ORDER_DETAILS = "order_details/{orderId}"
+
+    const val MAIN_SCREEN = "main_screen"
+
 
 }

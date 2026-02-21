@@ -51,6 +51,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.ui.test)
+    implementation(libs.androidx.ui)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -64,6 +65,8 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     ksp(libs.hilt.compiler)
+
+    implementation(libs.androidx.compose.ui.text.google.fonts)
 
 }
 

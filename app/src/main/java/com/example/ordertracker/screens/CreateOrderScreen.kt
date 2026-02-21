@@ -1,7 +1,6 @@
 package com.example.ordertracker.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,19 +13,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,7 +38,6 @@ import com.example.ordertracker.viewmodels.CreateOrderViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateOrder(
-    onBackClick: () -> Unit,
     onOrderCreated: () -> Unit,
     viewModel: CreateOrderViewModel = hiltViewModel()
 ) {
@@ -70,103 +61,71 @@ fun CreateOrder(
             })
     }
 
-    Scaffold(
-        modifier = Modifier.imePadding(),
-        topBar = {
-            TopAppBar(
-                title = {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(end = 40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "New Order", style = MaterialTheme.typography.titleLarge
-                    )
-                }
-            }, navigationIcon = {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-            }, colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.background,
-                titleContentColor = MaterialTheme.colorScheme.secondary,
-                navigationIconContentColor = MaterialTheme.colorScheme.secondary
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .imePadding()
+    ) {
+        state.orders.forEachIndexed { index, orderState ->
+
+            Text(
+                text = "Order ${index + 1}",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(horizontal = 16.dp)
             )
+
+            OrderForm(
+                state = orderState, index = index, viewModel = viewModel
             )
-        },
 
-        ) { paddingValues ->
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(scrollState)
-                .padding(paddingValues)
-        ) {
-            state.orders.forEachIndexed { index, orderState ->
-
-                Text(
-                    text = "Order ${index + 1}",
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
-
-                OrderForm(
-                    state = orderState, index = index, viewModel = viewModel
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Button(
-                    onClick = { viewModel.addOrder() }, modifier = Modifier.weight(1f)
-                ) {
-                    Text("Add Another Order")
-                }
-                Button(
-                    onClick = { viewModel.removeLastOrder() },
-                    enabled = state.orders.size > 1,
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text("Remove Order")
-                }
-            }
-
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            Button(
-                onClick = { viewModel.createOrder() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-                    .padding(horizontal = 14.dp),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Text(
-                    text = "Save Order",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontSize = 16.sp,
-                    lineHeight = 24.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(24.dp))
         }
 
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Button(
+                onClick = { viewModel.addOrder() }, modifier = Modifier.weight(1f)
+            ) {
+                Text("Add Another Order")
+            }
+            Button(
+                onClick = { viewModel.removeLastOrder() },
+                enabled = state.orders.size > 1,
+                modifier = Modifier.weight(1f)
+            ) {
+                Text("Remove Order")
+            }
+        }
+
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        Button(
+            onClick = { viewModel.createOrder() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+                .padding(horizontal = 14.dp),
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(
+                text = "Save Order",
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 16.sp,
+                lineHeight = 24.sp
+            )
+        }
+
+        Spacer(modifier = Modifier.height(10.dp))
     }
+
 }
+
 
 @Composable
 fun OrderForm(
