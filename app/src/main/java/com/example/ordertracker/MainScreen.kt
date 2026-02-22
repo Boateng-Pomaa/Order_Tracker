@@ -3,7 +3,6 @@ package com.example.ordertracker
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -25,10 +25,12 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.ordertracker.screens.CreateOrder
@@ -54,8 +55,12 @@ private const val ORDER_DETAILS_ROUTE = "order_details/{orderId}"
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackStackEntry?.destination?.route
+    var selectedItem by remember { mutableStateOf<BottomNavItems>(BottomNavItems.Dashboard) }
+
+    fun onBottomNavItemTap(item: BottomNavItems) {
+        selectedItem = item
+        navController.navigate(item.route)
+    }
 
 
     NavHost(
@@ -64,18 +69,23 @@ fun MainScreen() {
     ) {
 
         composable(BottomNavItems.Dashboard.route) {
-            OrderTrackerAppHost(title = "Dashboard", floatingActionButton = {
-                FloatingActionButton(
-                    onClick = { navController.navigate(CREATE_ORDER_ROUTE) },
-                    containerColor = MaterialTheme.colorScheme.primary
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add Order",
-                        tint = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-            }, navigationIcon = {}) { innerPadding ->
+            OrderTrackerAppHost(
+                title = "Dashboard",
+                floatingActionButton = {
+                    FloatingActionButton(
+                        onClick = { navController.navigate(CREATE_ORDER_ROUTE) },
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add Order",
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                },
+                onBottomNavItemTap = { onBottomNavItemTap(it) },
+                selectedItem = selectedItem,
+            ) { innerPadding ->
                 OrderTrackerScreen(
                     modifier = Modifier.padding(innerPadding),
                     onOrderClick = { orderId ->
@@ -96,6 +106,8 @@ fun MainScreen() {
             OrderTrackerAppHost(
                 title = "Order Details",
                 navigationIcon = { OrderTrackerBackButton { navController.popBackStack() } },
+                onBottomNavItemTap = { onBottomNavItemTap(it) },
+                selectedItem = selectedItem,
             ) { innerPadding ->
                 OrderDetailsScreen(
                     modifier = Modifier.padding(innerPadding),
@@ -108,6 +120,8 @@ fun MainScreen() {
             OrderTrackerAppHost(
                 title = "New Order",
                 navigationIcon = { OrderTrackerBackButton { navController.popBackStack() } },
+                onBottomNavItemTap = { onBottomNavItemTap(it) },
+                selectedItem = selectedItem,
             ) { innerPadding ->
                 CreateOrder(
                     modifier = Modifier.padding(innerPadding),
@@ -120,6 +134,8 @@ fun MainScreen() {
         composable(BottomNavItems.Customers.route) {
             OrderTrackerAppHost(
                 title = "Customers",
+                onBottomNavItemTap = { onBottomNavItemTap(it) },
+                selectedItem = BottomNavItems.Customers,
             ) { innerPadding ->
                 CustomersScreen(modifier = Modifier.padding(innerPadding))
             }
@@ -128,6 +144,8 @@ fun MainScreen() {
         composable(BottomNavItems.Search.route) {
             OrderTrackerAppHost(
                 title = "Search",
+                onBottomNavItemTap = { onBottomNavItemTap(it) },
+                selectedItem = BottomNavItems.Search,
             ) { innerPadding ->
                 SearchScreen(modifier = Modifier.padding(innerPadding))
             }
@@ -160,7 +178,7 @@ fun OrderTrackerAppHost(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderTrackerTopAppBar(title: String, navigationIcon: @Composable () -> Unit) {
-    TopAppBar(
+    CenterAlignedTopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.secondary,
@@ -168,16 +186,9 @@ fun OrderTrackerTopAppBar(title: String, navigationIcon: @Composable () -> Unit)
         ),
         navigationIcon = navigationIcon,
         title = {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 40.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = title, style = MaterialTheme.typography.titleLarge
-                )
-            }
+            Text(
+                text = title, style = MaterialTheme.typography.titleLarge
+            )
         },
     )
 }
@@ -241,7 +252,7 @@ fun OrderTrackerBottomNavBar(
                         )
 
                         Text(
-                            text = item.title, fontSize = 10.sp, color = textColor
+                            text = item.title, fontSize = 11.sp, color = textColor
                         )
                     }
                 }
