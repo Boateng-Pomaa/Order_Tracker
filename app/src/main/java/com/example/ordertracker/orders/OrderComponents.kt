@@ -288,8 +288,7 @@ fun AppTextField(
             value = value,
             onValueChange = onValueChange,
             modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+                .fillMaxWidth(),
             isError = error != null,
             keyboardOptions = keyboardOptions,
             singleLine = singleLine,
@@ -364,6 +363,9 @@ fun DeliverySelector(
                         selectedContainerColor = Color(0xffFFF9F5),
                         labelColor = Color(0xff9CA3AF),
                         selectedLabelColor = Color(0xff1F2937),
+                        disabledContainerColor = Color.Transparent,
+                        disabledSelectedContainerColor = Color(0xffFFF9F5),
+                        disabledLabelColor = Color(0xff9CA3AF),
                     )
                 )
             }
