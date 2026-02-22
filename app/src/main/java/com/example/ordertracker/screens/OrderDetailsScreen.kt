@@ -38,13 +38,13 @@ fun OrderDetailsScreen(
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = modifier.fillMaxSize()) {
         OrderTrackerDivider()
         Spacer(modifier = Modifier.size(8.dp))
 
         Column(
-            modifier = modifier
-                .fillMaxSize()
+            modifier = Modifier
+                .weight(1f)
                 .verticalScroll(scrollState)
                 .imePadding()
                 .background(MaterialTheme.colorScheme.background)
@@ -109,7 +109,8 @@ fun OrderDetailsScreen(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
-
 }
