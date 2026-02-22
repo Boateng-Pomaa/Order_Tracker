@@ -60,119 +60,128 @@ fun OrderItems(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = { onOrderClick(order.id) }),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondary)
+        border = BorderStroke(1.dp, Color.Black.copy(alpha = 0.1f))
 
     ) {
         Column(
-            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 11.dp)
+            modifier = Modifier.padding(12.dp)
         ) {
+
             Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = order.customerName,
-                    fontSize = 22.5.sp,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.weight(1f)
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp,
+                    ),
+                    color = Color(0xff111827),
                 )
 
                 Text(
-                    text = "Ghc${order.price}",
-                    fontSize = 22.5.sp,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.weight(1f)
+                    text = "₵${order.price}",
+                    fontSize = 18.sp,
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 15.sp,
+                    ),
+                    color = Color(0xff111827),
                 )
-
             }
-            Spacer(modifier = Modifier.height(8.dp))
+
+
+            Spacer(modifier = Modifier.size(20.dp))
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = order.item,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            shape = RoundedCornerShape(50)
-                        )
-                        .padding(8.dp)
-
-                )
-
-                Text(
-                    text = "x${order.units}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            shape = RoundedCornerShape(50)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-
-                )
-
-
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
             ) {
+                Column() {
 
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    Text(
-                        text = order.delivery.label,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                shape = RoundedCornerShape(50)
-                            )
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = order.item,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            fontSize = 14.sp,
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    shape = RoundedCornerShape(50)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
 
-                    Text(
-                        text = order.status.label,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onTertiary,
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.tertiary,
-                                shape = RoundedCornerShape(50)
-                            )
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                        Text(
+                            text = "x${order.units}",
+                            fontSize = 14.sp,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    shape = RoundedCornerShape(50)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
 
-                    )
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
 
+                        Text(
+                            text = order.delivery.label,
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.onBackground,
+                                    shape = RoundedCornerShape(50)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+
+                        Text(
+                            text = order.status.label,
+                            style = MaterialTheme.typography.bodySmall,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onTertiary,
+                            modifier = Modifier
+                                .background(
+                                    color = MaterialTheme.colorScheme.tertiary,
+                                    shape = RoundedCornerShape(50)
+                                )
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+
+                        )
+
+                    }
 
                 }
 
                 IconButton(
+                    modifier = Modifier
+                        .size(32.dp),
                     onClick = { onDeleteOrderClick() }) {
                     Icon(
-                        painter = painterResource(id = R.drawable.img_delete),
+                        painter = painterResource(id = R.drawable.ic_delete),
                         modifier = Modifier.size(24.dp),
                         contentDescription = "Delete order",
-                        tint = MaterialTheme.colorScheme.surface
+                        tint = Color(0xffDC2626)
                     )
                 }
-
             }
+
+
         }
 
     }

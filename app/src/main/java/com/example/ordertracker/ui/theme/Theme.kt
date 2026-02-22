@@ -1,7 +1,6 @@
 package com.example.ordertracker.ui.theme
 
 import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
@@ -9,6 +8,13 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
+import androidx.compose.ui.unit.sp
+import com.example.ordertracker.R
 
 private val DarkColorScheme = darkColorScheme(
     primary = Buttons,
@@ -66,7 +72,126 @@ fun OrderTrackerTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = orderTrackerTypography(),
         content = content
+    )
+}
+
+@Composable
+fun orderTrackerTypography(): androidx.compose.material3.Typography {
+    val provider = GoogleFont.Provider(
+        providerAuthority = "com.google.android.gms.fonts",
+        providerPackage = "com.google.android.gms",
+        certificates = R.array.com_google_android_gms_fonts_certs
+    )
+
+    val fontFamily = FontFamily(
+        Font(googleFont = GoogleFont("Inter"), fontProvider = provider)
+    )
+
+    return androidx.compose.material3.Typography(
+        // Large display text for hero sections
+        displayLarge = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 57.sp,
+            lineHeight = 64.sp
+        ),
+        displayMedium = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 45.sp,
+            lineHeight = 52.sp
+        ),
+        displaySmall = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 36.sp,
+            lineHeight = 44.sp
+        ),
+
+        // Main section headers
+        headlineLarge = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 32.sp,
+            lineHeight = 40.sp
+        ),
+        headlineMedium = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 28.sp,
+            lineHeight = 36.sp
+        ),
+        headlineSmall = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 24.sp,
+            lineHeight = 32.sp
+        ),
+
+        // App bar titles and card headers
+        titleLarge = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Bold,
+            fontSize = 24.sp,
+            lineHeight = 36.sp,
+            letterSpacing = 0.sp
+        ),
+        titleMedium = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 12.sp,
+            lineHeight = 18.sp,
+            letterSpacing = 0.sp
+        ),
+        titleSmall = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
+            lineHeight = 20.sp
+        ),
+
+        // Standard body text
+        bodyLarge = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 16.sp,
+            lineHeight = 24.sp,
+            letterSpacing = 0.5.sp
+        ),
+        bodyMedium = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            lineHeight = 16.sp
+        ),
+        bodySmall = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Normal,
+            fontSize = 10.sp,
+            lineHeight = 14.sp
+        ),
+
+        // Buttons, captions, and small annotations
+        labelLarge = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
+            lineHeight = 20.sp
+        ),
+        labelMedium = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 12.sp,
+            lineHeight = 16.sp
+        ),
+        labelSmall = TextStyle(
+            fontFamily = fontFamily,
+            fontWeight = FontWeight.Medium,
+            fontSize = 12.sp,
+            lineHeight = 16.5.sp,
+            letterSpacing = 0.sp
+        ),
     )
 }
