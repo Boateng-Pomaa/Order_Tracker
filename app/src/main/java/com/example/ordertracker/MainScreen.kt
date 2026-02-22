@@ -1,13 +1,19 @@
 package com.example.ordertracker
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
@@ -194,38 +200,52 @@ fun OrderTrackerBottomNavBar(
         BottomNavItems.Dashboard, BottomNavItems.Customers, BottomNavItems.Search
     )
 
-    BottomAppBar {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.Top
+    BottomAppBar(
+        contentPadding = PaddingValues(0.dp),
+        containerColor = MaterialTheme.colorScheme.background,
         ) {
-            items.forEach { item ->
-                val isSelected = selectedItem == item
+        Column(modifier = Modifier.fillMaxSize()) {
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(1.dp)
+                    .background(Color.Black.copy(alpha = 0.1f))
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.Top
+            ) {
+                items.forEach { item ->
+                    val isSelected = selectedItem == item
 
-                val iconColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
+                    val iconColor =
+                        if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
 
-                val textColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
+                    val textColor =
+                        if (isSelected) MaterialTheme.colorScheme.primary else Color.Gray
 
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Top,
-                    modifier = Modifier
-                        .padding(top = 4.dp)
-                        .clickable { onTap?.invoke(item) }) {
-                    Icon(
-                        painter = painterResource(id = item.icon),
-                        contentDescription = item.title,
-                        tint = iconColor
-                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Top,
+                        modifier = Modifier
+                            .padding(top = 4.dp)
+                            .width(109.dp)
+                            .clickable { onTap?.invoke(item) }) {
+                        Icon(
+                            painter = painterResource(id = item.icon),
+                            contentDescription = item.title,
+                            tint = iconColor,
+                            modifier = Modifier.size(18.dp)
+                        )
 
-                    Text(
-                        text = item.title, fontSize = 10.sp, color = textColor
-                    )
+                        Text(
+                            text = item.title, fontSize = 10.sp, color = textColor
+                        )
+                    }
                 }
             }
         }
     }
 }
-
-data class TopBarState(val title: String = "", val isBackButtonVisible: Boolean)
