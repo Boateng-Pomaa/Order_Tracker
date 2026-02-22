@@ -136,7 +136,7 @@ fun OrderForm(
     state: CreateOrderUiState, index: Int, viewModel: CreateOrderViewModel
 ) {
 
-    SectionHeader("Customer Details")
+    SectionHeader("Customer Details".uppercase())
 
     AppTextField(
         value = state.customerName,
@@ -154,7 +154,7 @@ fun OrderForm(
         error = state.contactError
     )
 
-    SectionHeader("Order Details")
+    SectionHeader("Order Details".uppercase())
 
     AppTextField(
         value = state.item,

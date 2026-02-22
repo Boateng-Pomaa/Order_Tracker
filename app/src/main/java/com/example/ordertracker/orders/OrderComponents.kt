@@ -2,8 +2,10 @@ package com.example.ordertracker.orders
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -37,8 +39,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ordertracker.R
@@ -274,8 +279,8 @@ fun AppTextField(
     Column(modifier = modifier) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Medium),
+            color = Color(0xff1F2937),
         )
         Spacer(modifier = Modifier.height(4.dp))
 
@@ -284,12 +289,16 @@ fun AppTextField(
             onValueChange = onValueChange,
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.onPrimary),
+                .height(48.dp),
             isError = error != null,
             keyboardOptions = keyboardOptions,
             singleLine = singleLine,
             enabled = enabled,
-
+            colors = OutlinedTextFieldDefaults.colors(
+                unfocusedBorderColor = Color.Black.copy(alpha = 0.1f),
+                unfocusedContainerColor = Color.White,
+                focusedContainerColor = Color.White,
+            )
             )
 
         if (error != null) {
@@ -308,35 +317,56 @@ fun SectionHeader(title: String) {
     Text(
         text = title,
         style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        color = Color(0xff9CA3AF),
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
     )
 }
 
 @Composable
 fun DeliverySelector(
-    selected: Delivery, onSelected: (Delivery) -> Unit, enabled: Boolean = true
+    selected: Delivery,
+    onSelected: (Delivery) -> Unit,
+    enabled: Boolean = true
 ) {
-    Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Delivery.entries.forEach { delivery ->
-            FilterChip(
-                selected = selected == delivery,
-                onClick = { onSelected(delivery) },
-                label = { Text(delivery.name.replace("_", " ")) },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(start = 16.dp, end = 16.dp),
-                enabled = enabled,
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary,
-                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    labelColor = MaterialTheme.colorScheme.onSurface,
-                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+    Box(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, Color.Black.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
+                .background(Color.White)
+                .padding(4.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Delivery.entries.forEach { delivery ->
 
+
+                FilterChip(
+                    selected = selected == delivery,
+                    onClick = { onSelected(delivery) },
+                    label = {
+                        Text(
+                            delivery.name.replace("_", " "),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    },
+                    modifier = Modifier.weight(1f),
+                    enabled = enabled,
+                    border = null,
+                    elevation = FilterChipDefaults.filterChipElevation(
+                        elevation = if (selected == delivery) 2.dp else 0.dp,
+                        pressedElevation = 1.dp,
+                        focusedElevation = if (selected == delivery) 2.dp else 0.dp,
+                        hoveredElevation = if (selected == delivery) 2.dp else 0.dp
+                    ),
+                    colors = FilterChipDefaults.filterChipColors(
+                        containerColor = Color.Transparent,
+                        selectedContainerColor = Color(0xffFFF9F5),
+                        labelColor = Color(0xff9CA3AF),
+                        selectedLabelColor = Color(0xff1F2937),
+                    )
                 )
-            )
+            }
         }
     }
 }
@@ -363,13 +393,13 @@ fun StatusDropdown(
                 modifier = Modifier
                     .menuAnchor()
                     .fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(8.dp),
                 enabled = enabled,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                    focusedContainerColor = Color.White,
+                    unfocusedContainerColor = Color.White,
+                    focusedBorderColor = Color.Black.copy(alpha = 0.1f),
+                    unfocusedBorderColor = Color.Black.copy(alpha = 0.1f),
                 )
             )
 
