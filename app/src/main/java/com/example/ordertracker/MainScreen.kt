@@ -216,12 +216,7 @@ fun OrderTrackerBottomNavBar(
         containerColor = MaterialTheme.colorScheme.background,
         ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(Color.Black.copy(alpha = 0.1f))
-            )
+            OrderTrackerDivider()
             Spacer(modifier = Modifier.size(8.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -259,4 +254,14 @@ fun OrderTrackerBottomNavBar(
             }
         }
     }
+}
+
+@Composable
+fun OrderTrackerDivider() {
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(1.dp)
+            .background(Color.Black.copy(alpha = 0.1f))
+    )
 }

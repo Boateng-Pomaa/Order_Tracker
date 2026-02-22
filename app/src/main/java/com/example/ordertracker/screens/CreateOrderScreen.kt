@@ -28,6 +28,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.ordertracker.OrderTrackerDivider
 import com.example.ordertracker.orders.AppTextField
 import com.example.ordertracker.orders.DeliverySelector
 import com.example.ordertracker.orders.SectionHeader
@@ -62,67 +63,69 @@ fun CreateOrder(
             })
     }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .imePadding()
-    ) {
-        state.orders.forEachIndexed { index, orderState ->
-
-            Text(
-                text = "Order ${index + 1}",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
-            OrderForm(
-                state = orderState, index = index, viewModel = viewModel
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+    Column(modifier = modifier.fillMaxSize()) {
+        OrderTrackerDivider()
+        Column(
+            modifier = Modifier.weight(1f)
+                .verticalScroll(scrollState)
+                .imePadding()
         ) {
-            Button(
-                onClick = { viewModel.addOrder() }, modifier = Modifier.weight(1f)
-            ) {
-                Text("Add Another Order")
+            state.orders.forEachIndexed { index, orderState ->
+
+                Text(
+                    text = "Order ${index + 1}",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+
+                OrderForm(
+                    state = orderState, index = index, viewModel = viewModel
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
             }
-            Button(
-                onClick = { viewModel.removeLastOrder() },
-                enabled = state.orders.size > 1,
-                modifier = Modifier.weight(1f)
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text("Remove Order")
+                Button(
+                    onClick = { viewModel.addOrder() }, modifier = Modifier.weight(1f)
+                ) {
+                    Text("Add Another Order")
+                }
+                Button(
+                    onClick = { viewModel.removeLastOrder() },
+                    enabled = state.orders.size > 1,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Remove Order")
+                }
             }
+
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Button(
+                onClick = { viewModel.createOrder() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .padding(horizontal = 14.dp),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Text(
+                    text = "Save Order",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
         }
-
-
-        Spacer(modifier = Modifier.height(10.dp))
-
-        Button(
-            onClick = { viewModel.createOrder() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .padding(horizontal = 14.dp),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Text(
-                text = "Save Order",
-                style = MaterialTheme.typography.titleMedium,
-                fontSize = 16.sp,
-                lineHeight = 24.sp
-            )
-        }
-
-        Spacer(modifier = Modifier.height(10.dp))
     }
 
 }
