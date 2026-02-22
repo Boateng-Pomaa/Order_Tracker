@@ -30,13 +30,14 @@ import com.example.ordertracker.viewmodels.OrderDetailsViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderDetailsScreen(
+    modifier: Modifier = Modifier,
     viewModel: OrderDetailsViewModel = hiltViewModel(), onBackClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
             .imePadding()

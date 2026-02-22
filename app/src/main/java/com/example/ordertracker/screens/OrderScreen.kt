@@ -23,8 +23,9 @@ import com.example.ordertracker.viewmodels.OrdersViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderTrackerScreen(
+    modifier: Modifier = Modifier,
     viewModel: OrdersViewModel = hiltViewModel(),
-    onOrderClick: (Long) -> Unit = {}
+    onOrderClick: (Long) -> Unit = {},
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val orderToDelete by viewModel.orderToDelete.collectAsState()
@@ -47,7 +48,7 @@ fun OrderTrackerScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {

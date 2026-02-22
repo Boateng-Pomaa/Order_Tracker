@@ -38,6 +38,7 @@ import com.example.ordertracker.viewmodels.CreateOrderViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateOrder(
+    modifier: Modifier = Modifier,
     onOrderCreated: () -> Unit,
     viewModel: CreateOrderViewModel = hiltViewModel()
 ) {
@@ -62,7 +63,7 @@ fun CreateOrder(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
             .imePadding()
