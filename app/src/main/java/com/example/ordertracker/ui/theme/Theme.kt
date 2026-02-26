@@ -18,7 +18,10 @@ private val DarkColorScheme = darkColorScheme(
     onPrimary = Cards,
     onSurface = ItemsText,
     onBackground = RoundTextBackground,
-    onSecondary = CardBorders
+    onSecondary = CardBorders,
+    onTertiary = StatusText,
+    surface = DeleteBackground,
+    onSurfaceVariant = pendingListText
 )
 
 private val LightColorScheme = lightColorScheme(

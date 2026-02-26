@@ -54,6 +54,9 @@ fun CreateOrder(
     if (state.showSuccessDialog) {
         AlertDialog(
             onDismissRequest = { viewModel.onDismissSuccessDialog() },
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.secondary,
+            textContentColor = MaterialTheme.colorScheme.secondary,
             title = { Text("Order Created") },
             text = { Text("The order was created successfully.") },
             confirmButton = {
@@ -62,7 +65,7 @@ fun CreateOrder(
                         viewModel.onDismissSuccessDialog()
                         onOrderCreated() // navigate back
                     }) {
-                    Text("OK")
+                    Text("OK", color = MaterialTheme.colorScheme.secondary)
                 }
             })
     }

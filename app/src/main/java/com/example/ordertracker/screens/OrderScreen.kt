@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,16 +30,19 @@ fun OrderTrackerScreen(
     if (orderToDelete != null) {
         AlertDialog(
             onDismissRequest = { viewModel.cancelDelete() },
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.secondary,
+            textContentColor = MaterialTheme.colorScheme.secondary,
             title = { Text("Delete Order") },
             text = { Text("Are you sure you want to delete this order?") },
             confirmButton = {
                 TextButton(onClick = { viewModel.confirmDelete() }) {
-                    Text("Delete")
+                    Text("Delete", color = MaterialTheme.colorScheme.tertiary)
                 }
             },
             dismissButton = {
                 TextButton(onClick = { viewModel.cancelDelete() }) {
-                    Text("Cancel")
+                    Text("Cancel", color = MaterialTheme.colorScheme.tertiary)
                 }
             })
     }
