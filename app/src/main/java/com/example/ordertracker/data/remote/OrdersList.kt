@@ -27,7 +27,7 @@ class OrdersList : OrderApi {
                 price = 100.0,
                 units = 1,
                 status = Status.PENDING,
-                delivery = Delivery.DELIVERY,
+                delivery = Delivery.SELF_PICKUP,
                 contact = "00987654"
             ), OrderModel(
                 id = 3,
@@ -55,7 +55,7 @@ class OrdersList : OrderApi {
                 price = 1500.0,
                 units = 1,
                 status = Status.PENDING,
-                delivery = Delivery.DELIVERY,
+                delivery = Delivery.SELF_PICKUP,
                 contact = "097666555"
             ),
             OrderModel(

@@ -1,13 +1,11 @@
 package com.example.ordertracker.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -23,8 +21,7 @@ import com.example.ordertracker.viewmodels.OrdersViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderTrackerScreen(
-    viewModel: OrdersViewModel = hiltViewModel(),
-    onOrderClick: (Long) -> Unit = {}
+    viewModel: OrdersViewModel = hiltViewModel(), onOrderClick: (Long) -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val orderToDelete by viewModel.orderToDelete.collectAsState()
@@ -47,9 +44,8 @@ fun OrderTrackerScreen(
     }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+        modifier = Modifier.fillMaxSize()
+//            .background(MaterialTheme.colorScheme.background)
     ) {
         when (uiState) {
             is OrderUiState.Loading -> {

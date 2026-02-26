@@ -31,7 +31,9 @@ private val LightColorScheme = lightColorScheme(
     onBackground = RoundTextBackground,
     onSecondary = CardBorders,
     onTertiary = StatusText,
-    surface = DeleteBackground
+    surface = DeleteBackground,
+    onSurfaceVariant = pendingListText
+
 
 
 

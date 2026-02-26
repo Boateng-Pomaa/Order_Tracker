@@ -1,17 +1,24 @@
 package com.example.ordertracker.orders
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -37,8 +44,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.paint
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ordertracker.R
@@ -49,127 +64,198 @@ import com.example.ordertracker.uistate.OrderUiState
 fun OrderItems(
     order: OrderModel, onDeleteOrderClick: () -> Unit, onOrderClick: (Long) -> Unit = {}
 ) {
-    Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimary),
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(onClick = { onOrderClick(order.id) }),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondary)
 
-    ) {
-        Column(
-            modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 12.dp, top = 11.dp)
+    Box {
+        Image(
+            painter = painterResource(id = R.drawable.background_overlay),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize()
+        )
+
+        Card(
+            colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+            shape = RoundedCornerShape(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = { onOrderClick(order.id) }),
+            border = BorderStroke(0.dp, Color.Transparent)
+
         ) {
             Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(IntrinsicSize.Min)
+                    .clip(RoundedCornerShape(16.dp))
             ) {
-                Text(
-                    text = order.customerName,
-                    fontSize = 22.5.sp,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.weight(1f)
-                )
-
-                Text(
-                    text = "Ghc${order.price}",
-                    fontSize = 22.5.sp,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier.weight(1f)
-                )
-
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = order.item,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            shape = RoundedCornerShape(50)
-                        )
-                        .padding(8.dp)
-
-                )
-
-                Text(
-                    text = "x${order.units}",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier
-                        .background(
-                            color = MaterialTheme.colorScheme.onBackground,
-                            shape = RoundedCornerShape(50)
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp)
-
-                )
-
-
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(20.dp)
-                ) {
-                    Text(
-                        text = order.delivery.label,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.onBackground,
-                                shape = RoundedCornerShape(50)
-                            )
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    )
-
-                    Text(
-                        text = order.status.label,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onTertiary,
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.tertiary,
-                                shape = RoundedCornerShape(50)
-                            )
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-
-                    )
-
-
+                val accentColor = when (order.status) {
+                    Status.PENDING -> MaterialTheme.colorScheme.tertiary
+                    Status.DELIVERED -> MaterialTheme.colorScheme.onSurfaceVariant
+                    Status.PICKED -> MaterialTheme.colorScheme.onSurfaceVariant
                 }
 
-                IconButton(
-                    onClick = { onDeleteOrderClick() }) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.img_delete),
-                        modifier = Modifier.size(24.dp),
-                        contentDescription = "Delete order",
-                        tint = MaterialTheme.colorScheme.surface
+                Box(
+                    modifier = Modifier
+                        .width(4.dp)
+                        .background(accentColor)
+                        .fillMaxHeight()
+                )
+                Column(
+                    modifier = Modifier.padding(
+                        start = 12.dp, end = 12.dp, bottom = 12.dp, top = 11.dp
                     )
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(30.dp)
+                    ) {
+                        Text(
+                            text = order.customerName,
+                            fontSize = 16.sp,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onTertiary,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                        Text(
+                            text = "GHC ${order.price}",
+                            fontSize = 15.sp,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.tertiary,
+                            modifier = Modifier.weight(1f)
+                        )
+
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+
+                    Box(
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .paint(
+                                painterResource(R.drawable.item_background),
+                                contentScale = ContentScale.FillBounds,
+                            )
+                    ) {
+
+                        Row(
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .padding(horizontal = 10.dp, vertical = 6.dp),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = order.item,
+                                fontSize = 13.sp,
+                                letterSpacing = 0.2.sp,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+
+                            )
+
+                            Text(
+                                text = "x${order.units}",
+                                letterSpacing = 0.2.sp,
+                                fontSize = 13.sp,
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.background,
+                                modifier = Modifier
+                                    .background(
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        shape = RoundedCornerShape(60)
+                                    )
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+
+                            )
+
+
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(1.dp),
+                            verticalAlignment = Alignment.CenterVertically
+
+                        ) {
+                            Text(
+                                text = order.delivery.label,
+                                style = MaterialTheme.typography.bodySmall,
+                                fontSize = 14.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier
+                                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.background,
+                                        shape = RoundedCornerShape(50)
+                                    )
+                                    .border(
+                                        shape = RoundedCornerShape(50),
+                                        width = 1.dp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    .padding(horizontal = 12.dp, vertical = 4.dp)
+
+                            )
+
+
+                            val statusColor = when (order.status) {
+                                Status.PENDING -> MaterialTheme.colorScheme.tertiary
+                                Status.DELIVERED -> MaterialTheme.colorScheme.onSurfaceVariant
+                                Status.PICKED -> MaterialTheme.colorScheme.onSurfaceVariant
+                            }
+
+                            Row(
+                                modifier = Modifier
+                                    .padding(horizontal = 12.dp, vertical = 4.dp)
+                                    .background(
+                                        color = statusColor, shape = RoundedCornerShape(50)
+                                    )
+                                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                if (order.status == Status.DELIVERED || order.status == Status.PICKED) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.done_svg),
+                                        contentDescription = "Done",
+                                        tint = MaterialTheme.colorScheme.background,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                }
+                                Text(
+                                    text = order.status.label,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.background,
+                                )
+                            }
+
+                        }
+
+                        IconButton(
+                            onClick = { onDeleteOrderClick() }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.img_delete),
+                                modifier = Modifier.size(24.dp),
+                                contentDescription = "Delete order",
+                                tint = MaterialTheme.colorScheme.surface
+                            )
+                        }
+
+                    }
                 }
 
             }
         }
-
     }
 }
 
@@ -177,41 +263,46 @@ fun OrderItems(
 @Composable
 fun PendingOrders(state: OrderUiState.Success) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimary),
         shape = RoundedCornerShape(12.dp),
-        modifier = Modifier.fillMaxWidth(),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondary)
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Box {
 
-            Row(
-                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
+            Image(
+                painter = painterResource(R.drawable.background_border),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(RoundedCornerShape(12.dp))
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp)
             ) {
+
+                Text(
+                    text = "Pending Orders",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .paint(painterResource(R.drawable.overlay_border))
+                        .padding(horizontal = 12.dp, vertical = 4.dp)
+
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
                 Text(
                     text = "${state.pendingCount}",
                     style = MaterialTheme.typography.titleLarge,
                     color = MaterialTheme.colorScheme.onTertiary,
                 )
 
-                Text(
-                    text = "Pending Delivery",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontSize = 12.sp,
-
-                    color = MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier
-
-                        .background(
-                            color = MaterialTheme.colorScheme.tertiary,
-                            shape = RoundedCornerShape(12.dp),
-                        )
-                        .padding(start = 10.dp, end = 10.dp, top = 4.dp, bottom = 4.dp)
-                        .align(Alignment.CenterVertically)
-
-
-                )
 
             }
         }
@@ -230,21 +321,14 @@ fun Home(
         contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text(
-                text = "Pending Orders",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 14.dp, top = 16.dp),
-                color = MaterialTheme.colorScheme.secondary
-            )
-        }
-        item {
             PendingOrders(state = OrderUiState.Success(orders))
         }
         item {
             Text(
                 text = "All Orders",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier.padding(bottom = 6.dp, top = 16.dp),
+                fontSize = 14.sp,
+                letterSpacing = 0.5.sp,
                 color = MaterialTheme.colorScheme.secondary
             )
         }
@@ -271,26 +355,67 @@ fun AppTextField(
     enabled: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
-    Column(modifier = modifier) {
-        Text(
-            text = label,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurface,
-        )
-        Spacer(modifier = Modifier.height(4.dp))
+    var isFocused by remember { mutableStateOf(false) }
 
-        OutlinedTextField(
-            value = value,
-            onValueChange = onValueChange,
+    val stateColor = when {
+        isFocused -> MaterialTheme.colorScheme.onSurfaceVariant
+        else -> MaterialTheme.colorScheme.secondary
+    }
+    Column(modifier = modifier) {
+
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(color = MaterialTheme.colorScheme.onPrimary),
-            isError = error != null,
-            keyboardOptions = keyboardOptions,
-            singleLine = singleLine,
-            enabled = enabled,
+                .height(70.dp)
+                .paint(
+                    painter = painterResource(id = R.drawable.background_overlay),
+                    contentScale = ContentScale.FillBounds
+                )
+                .border(
+                    width = 2.dp, color = if (error != null) {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    } else if (isFocused) {
+                        MaterialTheme.colorScheme.onSurfaceVariant
+                    } else {
+                        Color.Transparent
+                    }, shape = RoundedCornerShape(12.dp)
+                )
+        ) {
+
+            OutlinedTextField(
+                value = value,
+                onValueChange = onValueChange,
+                label = {
+                    Text(
+                        label,
+                        fontSize = 15.sp,
+                        color = stateColor,
+                        modifier = Modifier.padding(top = 10.dp)
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .onFocusChanged { isFocused = it.isFocused },
+                isError = error != null,
+                keyboardOptions = keyboardOptions,
+                singleLine = singleLine,
+                enabled = enabled,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedBorderColor = Color.Transparent,
+                    unfocusedBorderColor = Color.Transparent,
+                    errorBorderColor = Color.Transparent,
+                    errorTextColor = MaterialTheme.colorScheme.onTertiary,
+                    cursorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    focusedTextColor = MaterialTheme.colorScheme.onTertiary,
+                    unfocusedTextColor = MaterialTheme.colorScheme.secondary,
+                    disabledTextColor = MaterialTheme.colorScheme.onSecondary
+                )
 
             )
+        }
 
         if (error != null) {
             Text(
@@ -304,13 +429,23 @@ fun AppTextField(
 }
 
 @Composable
-fun SectionHeader(title: String) {
+fun SectionHeader(title: String, accentColor: Color) {
     Text(
         text = title,
         style = MaterialTheme.typography.labelLarge,
-        color = MaterialTheme.colorScheme.onSurfaceVariant,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 5.dp)
-    )
+        color = MaterialTheme.colorScheme.secondary,
+        modifier = Modifier
+            .padding(horizontal = 16.dp, vertical = 5.dp)
+            .drawBehind {
+                val strokeWidth = 4.dp.toPx()
+                drawLine(
+                    color = accentColor,
+                    start = Offset(0f, 0f),
+                    end = Offset(0f, size.height),
+                    strokeWidth = strokeWidth
+                )
+            }
+            .padding(start = 12.dp))
 }
 
 @Composable
@@ -318,25 +453,51 @@ fun DeliverySelector(
     selected: Delivery, onSelected: (Delivery) -> Unit, enabled: Boolean = true
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Delivery.entries.forEach { delivery ->
-            FilterChip(
-                selected = selected == delivery,
-                onClick = { onSelected(delivery) },
-                label = { Text(delivery.name.replace("_", " ")) },
+
+            val isSelected = selected == delivery
+            Box(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(start = 16.dp, end = 16.dp),
-                enabled = enabled,
-                colors = FilterChipDefaults.filterChipColors(
-                    containerColor = MaterialTheme.colorScheme.onPrimary,
-                    selectedContainerColor = MaterialTheme.colorScheme.primary,
-                    labelColor = MaterialTheme.colorScheme.onSurface,
-                    selectedLabelColor = MaterialTheme.colorScheme.onPrimary
+                    .height(30.dp)
 
+            ) {
+                if (isSelected) {
+                    Image(
+                        painter = painterResource(R.drawable.save_button),
+                        contentDescription = null,
+                        contentScale = ContentScale.FillBounds,
+                        modifier = Modifier.matchParentSize()
+                    )
+                }
+
+                FilterChip(
+                    selected = selected == delivery,
+                    onClick = { onSelected(delivery) },
+                    label = {
+                        Text(
+                            delivery.name.replace("_", " "),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center
+                        )
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    enabled = enabled,
+                    colors = FilterChipDefaults.filterChipColors(
+                        containerColor = Color.Transparent,
+                        selectedContainerColor = Color.Transparent,
+                        labelColor = MaterialTheme.colorScheme.secondary,
+                        selectedLabelColor = MaterialTheme.colorScheme.background,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSecondary,
+
+                        )
                 )
-            )
+            }
         }
     }
 }
@@ -366,19 +527,27 @@ fun StatusDropdown(
                 shape = RoundedCornerShape(12.dp),
                 enabled = enabled,
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                    focusedContainerColor = Color.Transparent,
+                    unfocusedContainerColor = Color.Transparent,
+                    focusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
+                    focusedTextColor = MaterialTheme.colorScheme.tertiary,
+                    unfocusedTextColor = MaterialTheme.colorScheme.tertiary,
+                    disabledTextColor = MaterialTheme.colorScheme.onSecondary,
+                    disabledBorderColor = MaterialTheme.colorScheme.onSecondary
                 )
             )
 
             ExposedDropdownMenu(
                 expanded = expanded,
-                modifier = Modifier.background(color = MaterialTheme.colorScheme.onPrimary),
+                modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
                 onDismissRequest = { expanded = false }) {
                 Status.entries.forEach { status ->
-                    DropdownMenuItem(text = { Text(status.name) }, onClick = {
+                    DropdownMenuItem(text = {
+                        Text(
+                            status.name, color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }, onClick = {
                         onSelected(status)
                         expanded = false
                     })
@@ -403,7 +572,7 @@ fun OrderFormContent(
 
     val order = state.order ?: return
 
-    SectionHeader("Customer Details")
+    SectionHeader("Customer Details", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     AppTextField(
         value = order.customerName,
@@ -421,7 +590,7 @@ fun OrderFormContent(
         enabled = state.isEditing
     )
 
-    SectionHeader("Order Details")
+    SectionHeader("Order Details", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     AppTextField(
         value = order.item,
@@ -463,16 +632,15 @@ fun OrderFormContent(
         )
     }
 
-    SectionHeader("Delivery Options")
+    SectionHeader("Delivery Options", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     DeliverySelector(
         selected = order.delivery, onSelected = onDeliveryChange, enabled = state.isEditing
     )
 
-    SectionHeader("Delivery Status")
+    SectionHeader("Delivery Status", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     StatusDropdown(
         selected = order.status, onSelected = onStatusChange, enabled = state.isEditing
     )
 }
-
