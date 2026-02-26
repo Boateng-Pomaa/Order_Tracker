@@ -40,8 +40,11 @@ jobs:
       - name: Build Debug APK
         run: ./gradlew assembleDebug
 
+      - name: Rename APK
+        run: mv app/build/outputs/apk/debug/app-debug.apk app/build/outputs/apk/debug/OrderTracker-debug.apk
+
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: OrderTracker-apk
-          path: app/build/outputs/apk/debug/OrderTracker.apk
+          path: app/build/outputs/apk/debug/OrderTracker-debug.apk
