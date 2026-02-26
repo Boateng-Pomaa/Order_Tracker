@@ -8,6 +8,7 @@ import com.example.ordertracker.orders.Delivery
 import com.example.ordertracker.orders.OrderModel
 import com.example.ordertracker.orders.Status
 import com.example.ordertracker.uistate.OrderDetailsUiState
+import com.example.ordertracker.util.ValidationUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -73,36 +74,12 @@ class OrderDetailsViewModel @Inject constructor(
         }
     }
 
-    private fun validateCustomerName(name: String): String? =
-        if (name.isBlank()) "Full name is required" else null
-
-    private fun validateContact(contact: String): String? =
-        if (contact.length < 10) "Enter a valid phone number" else null
-
-    private fun validatePrice(price: String): String? {
-        val priceValue = price.toDoubleOrNull()
-        return when {
-            priceValue == null -> "Enter a valid price"
-            priceValue <= 0 -> "Price must be greater than 0"
-            else -> null
-        }
-    }
-
-    private fun validateUnits(units: String): String? {
-        val unitsValue = units.toLongOrNull()
-        return when {
-            unitsValue == null -> "Enter a valid number"
-            unitsValue <= 0 -> "Units must be greater than 0"
-            else -> null
-        }
-    }
-
     private fun updateOrderState() {
         _uiState.update { currentState ->
-            val customerNameError = validateCustomerName(currentState.customerName)
-            val contactError = validateContact(currentState.contact)
-            val priceError = validatePrice(currentState.price)
-            val unitsError = validateUnits(currentState.units)
+            val customerNameError = ValidationUtil.validateCustomerName(currentState.customerName)
+            val contactError = ValidationUtil.validateContact(currentState.contact)
+            val priceError = ValidationUtil.validatePrice(currentState.price)
+            val unitsError = ValidationUtil.validateUnits(currentState.units)
 
             val isFormValid = customerNameError == null &&
                     contactError == null &&
