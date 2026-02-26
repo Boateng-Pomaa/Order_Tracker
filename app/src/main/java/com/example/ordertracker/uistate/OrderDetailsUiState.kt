@@ -17,5 +17,15 @@ data class OrderDetailsUiState(
 
 
     val isEditing: Boolean = false,
-    val hasChange:Boolean = false
+    val hasChange:Boolean = false,
+
+    val error: String? = null,
+
+    val customerNameError: String? = null,
+    val contactError: String? = null,
+    val itemError: String? = null,
+    val priceError: String? = null,
+    val unitsError: String? = null,
+
+    val isFormValid: Boolean = false
 )

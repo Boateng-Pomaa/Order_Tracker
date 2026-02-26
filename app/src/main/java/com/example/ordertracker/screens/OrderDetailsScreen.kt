@@ -97,6 +97,8 @@ fun OrderDetailsScreen(
                 )
             }
 
+            val isButtonEnabled = if (state.isEditing) state.hasChange && state.isFormValid else true
+
             Box(
                 modifier = Modifier
                     .height(40.dp)
@@ -107,11 +109,12 @@ fun OrderDetailsScreen(
                     painter = painterResource(R.drawable.save_button),
                     contentDescription = null,
                     contentScale = ContentScale.FillBounds,
+                    alpha = if (isButtonEnabled) 1f else 0.5f,
                     modifier = Modifier.matchParentSize()
                 )
 
                 Button(
-                    enabled = if (state.isEditing) state.hasChange else true,
+                    enabled = isButtonEnabled,
                     onClick = {
                         if (state.isEditing) {
                             viewModel.saveOrder()
@@ -119,11 +122,11 @@ fun OrderDetailsScreen(
                         viewModel.toggleEditing()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
+                        containerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent
                     ),
 
                     shape = RoundedCornerShape(8.dp),
-//                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.onSecondary)
                 ) {
                     Text(
                         if (state.isEditing) "Save Changes"
@@ -132,7 +135,7 @@ fun OrderDetailsScreen(
                         fontSize = 16.sp,
                         lineHeight = 24.sp,
                         modifier = Modifier.align(Alignment.CenterVertically),
-                        color = MaterialTheme.colorScheme.onTertiary
+                        color = if (isButtonEnabled) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.5f)
                     )
                 }
             }

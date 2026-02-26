@@ -373,7 +373,7 @@ fun AppTextField(
                 )
                 .border(
                     width = 2.dp, color = if (error != null) {
-                        MaterialTheme.colorScheme.onSurfaceVariant
+                        MaterialTheme.colorScheme.error
                     } else if (isFocused) {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     } else {
@@ -389,7 +389,7 @@ fun AppTextField(
                     Text(
                         label,
                         fontSize = 15.sp,
-                        color = stateColor,
+                        color = if (error != null) MaterialTheme.colorScheme.error else stateColor,
                         modifier = Modifier.padding(top = 10.dp)
                     )
                 },
@@ -410,7 +410,7 @@ fun AppTextField(
                     errorTextColor = MaterialTheme.colorScheme.onTertiary,
                     cursorColor = MaterialTheme.colorScheme.onSurfaceVariant,
                     focusedTextColor = MaterialTheme.colorScheme.onTertiary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.secondary,
+                    unfocusedTextColor = MaterialTheme.colorScheme.onTertiary,
                     disabledTextColor = MaterialTheme.colorScheme.onSecondary
                 )
 
@@ -575,29 +575,32 @@ fun OrderFormContent(
     SectionHeader("Customer Details", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     AppTextField(
-        value = order.customerName,
+        value = state.customerName,
         onValueChange = onCustomerNameChange,
         label = "Full Name",
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        enabled = state.isEditing
+        enabled = state.isEditing,
+        error = state.customerNameError
     )
 
     AppTextField(
-        value = order.contact,
+        value = state.contact,
         onValueChange = onContactChange,
         label = "Contact Number",
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-        enabled = state.isEditing
+        enabled = state.isEditing,
+        error = state.contactError
     )
 
     SectionHeader("Order Details", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     AppTextField(
-        value = order.item,
+        value = state.item,
         onValueChange = onItemChange,
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         label = "Item Description",
-        enabled = state.isEditing
+        enabled = state.isEditing,
+        error = state.itemError
     )
 
     Row(
@@ -606,7 +609,7 @@ fun OrderFormContent(
     ) {
 
         AppTextField(
-            value = order.price.toString(),
+            value = state.price,
             onValueChange = onPriceChange,
             label = "Price (Ghc)",
             modifier = Modifier
@@ -615,11 +618,12 @@ fun OrderFormContent(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal
             ),
-            enabled = state.isEditing
+            enabled = state.isEditing,
+            error = state.priceError
         )
 
         AppTextField(
-            value = order.units.toString(),
+            value = state.units,
             onValueChange = onUnitsChange,
             label = "Units",
             modifier = Modifier
@@ -628,19 +632,20 @@ fun OrderFormContent(
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number
             ),
-            enabled = state.isEditing
+            enabled = state.isEditing,
+            error = state.unitsError
         )
     }
 
     SectionHeader("Delivery Options", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     DeliverySelector(
-        selected = order.delivery, onSelected = onDeliveryChange, enabled = state.isEditing
+        selected = state.delivery, onSelected = onDeliveryChange, enabled = state.isEditing
     )
 
     SectionHeader("Delivery Status", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     StatusDropdown(
-        selected = order.status, onSelected = onStatusChange, enabled = state.isEditing
+        selected = state.status, onSelected = onStatusChange, enabled = state.isEditing
     )
 }
