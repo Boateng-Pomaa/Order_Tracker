@@ -20,6 +20,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,27 +33,46 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavHostController
+import com.example.ordertracker.OrderTrackerTopBar
 import com.example.ordertracker.R
 import com.example.ordertracker.orders.OrderFormContent
 import com.example.ordertracker.viewmodels.OrderDetailsViewModel
 
+
+@Composable
+fun DetailsScreen(navController: NavHostController) {
+    Scaffold(
+        topBar = {
+            OrderTrackerTopBar(
+                title = "Order Details",
+                showBackButton = true,
+                onBackClick = { navController.navigateUp() })
+        }) { innerPadding ->
+        OrderDetailsScreen(
+            modifier = Modifier.padding(innerPadding),
+            onBackClick = { navController.popBackStack() })
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderDetailsScreen(
-    viewModel: OrderDetailsViewModel = hiltViewModel(), onBackClick: () -> Unit
+    modifier: Modifier = Modifier,
+    viewModel: OrderDetailsViewModel = hiltViewModel(),
+    onBackClick: () -> Unit
 ) {
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
             .imePadding()
             .background(MaterialTheme.colorScheme.background)
     ) {
         OrderFormContent(state = state, onCustomerNameChange = {
-
             viewModel.updateCustomerName(it)
         }, onContactChange = {
             viewModel.updateContact(it)
@@ -93,11 +113,13 @@ fun OrderDetailsScreen(
                     text = "Cancel",
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 16.sp,
-                    lineHeight = 24.sp
+                    lineHeight = 24.sp,
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
 
-            val isButtonEnabled = if (state.isEditing) state.hasChange && state.isFormValid else true
+            val isButtonEnabled =
+                if (state.isEditing) state.hasChange && state.isFormValid else true
 
             Box(
                 modifier = Modifier
@@ -114,19 +136,17 @@ fun OrderDetailsScreen(
                 )
 
                 Button(
-                    enabled = isButtonEnabled,
-                    onClick = {
+                    enabled = isButtonEnabled, onClick = {
                         if (state.isEditing) {
                             viewModel.saveOrder()
                         }
                         viewModel.toggleEditing()
-                    },
-                    colors = ButtonDefaults.buttonColors(
+                    }, colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent
                     ),
 
-                    shape = RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxSize()
                 ) {
                     Text(
                         if (state.isEditing) "Save Changes"
@@ -134,12 +154,13 @@ fun OrderDetailsScreen(
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 16.sp,
                         lineHeight = 24.sp,
-                        modifier = Modifier.align(Alignment.CenterVertically),
-                        color = if (isButtonEnabled) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.5f)
+                        color = if (isButtonEnabled) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onTertiary.copy(
+                            alpha = 0.5f
+                        )
                     )
                 }
             }
         }
+        Spacer(modifier = Modifier.height(24.dp))
     }
-
 }

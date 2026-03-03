@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -33,11 +35,14 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,12 +59,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ordertracker.R
 import com.example.ordertracker.uistate.OrderDetailsUiState
 import com.example.ordertracker.uistate.OrderUiState
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderItems(
     order: OrderModel, onDeleteOrderClick: () -> Unit, onOrderClick: (Long) -> Unit = {}
@@ -107,14 +114,14 @@ fun OrderItems(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(30.dp)
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
                             text = order.customerName,
                             fontSize = 16.sp,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onTertiary,
-                            modifier = Modifier.weight(1f)
                         )
 
                         Text(
@@ -122,11 +129,13 @@ fun OrderItems(
                             fontSize = 15.sp,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.tertiary,
-                            modifier = Modifier.weight(1f)
+
+                            textAlign = TextAlign.End
+
                         )
 
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
 
                     Box(
@@ -149,7 +158,7 @@ fun OrderItems(
                                 text = order.item,
                                 fontSize = 13.sp,
                                 letterSpacing = 0.2.sp,
-                                style = MaterialTheme.typography.labelSmall,
+                                style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
 
@@ -159,7 +168,7 @@ fun OrderItems(
                                 text = "x${order.units}",
                                 letterSpacing = 0.2.sp,
                                 fontSize = 13.sp,
-                                style = MaterialTheme.typography.labelSmall,
+                                style = MaterialTheme.typography.titleMedium,
                                 color = MaterialTheme.colorScheme.background,
                                 modifier = Modifier
                                     .background(
@@ -173,7 +182,7 @@ fun OrderItems(
 
                         }
                     }
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(12.dp))
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -182,17 +191,16 @@ fun OrderItems(
                     ) {
 
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(1.dp),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
                             verticalAlignment = Alignment.CenterVertically
 
                         ) {
                             Text(
                                 text = order.delivery.label,
-                                style = MaterialTheme.typography.bodySmall,
+                                style = MaterialTheme.typography.titleMedium,
                                 fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier
-                                    .padding(horizontal = 12.dp, vertical = 4.dp)
                                     .background(
                                         color = MaterialTheme.colorScheme.background,
                                         shape = RoundedCornerShape(50)
@@ -215,7 +223,6 @@ fun OrderItems(
 
                             Row(
                                 modifier = Modifier
-                                    .padding(horizontal = 12.dp, vertical = 4.dp)
                                     .background(
                                         color = statusColor, shape = RoundedCornerShape(50)
                                     )
@@ -233,7 +240,7 @@ fun OrderItems(
                                 }
                                 Text(
                                     text = order.status.label,
-                                    style = MaterialTheme.typography.bodySmall,
+                                    style = MaterialTheme.typography.titleMedium,
                                     fontSize = 14.sp,
                                     color = MaterialTheme.colorScheme.background,
                                 )
@@ -241,14 +248,17 @@ fun OrderItems(
 
                         }
 
-                        IconButton(
-                            onClick = { onDeleteOrderClick() }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.img_delete),
-                                modifier = Modifier.size(24.dp),
-                                contentDescription = "Delete order",
-                                tint = MaterialTheme.colorScheme.surface
-                            )
+                        CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides Dp.Unspecified) {
+                            IconButton(
+                                onClick = { onDeleteOrderClick() }, modifier = Modifier.size(24.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.img_delete),
+                                    modifier = Modifier.size(24.dp),
+                                    contentDescription = "Delete order",
+                                    tint = MaterialTheme.colorScheme.surface
+                                )
+                            }
                         }
 
                     }
@@ -351,8 +361,9 @@ fun AppTextField(
     label: String,
     modifier: Modifier = Modifier,
     error: String? = null,
-    singleLine: Boolean = true,
+    singleLine: Boolean,
     enabled: Boolean = true,
+    minLines: Int = 1,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     var isFocused by remember { mutableStateOf(false) }
@@ -366,13 +377,10 @@ fun AppTextField(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(70.dp)
-                .paint(
-                    painter = painterResource(id = R.drawable.background_overlay),
-                    contentScale = ContentScale.FillBounds
-                )
+                .wrapContentHeight()
+                .clip(RoundedCornerShape(12.dp))
                 .border(
-                    width = 2.dp, color = if (error != null) {
+                    width = 1.dp, color = if (error != null) {
                         MaterialTheme.colorScheme.error
                     } else if (isFocused) {
                         MaterialTheme.colorScheme.onSurfaceVariant
@@ -381,20 +389,30 @@ fun AppTextField(
                     }, shape = RoundedCornerShape(12.dp)
                 )
         ) {
+            Image(
+                painter = painterResource(R.drawable.background_overlay),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
+            )
 
             OutlinedTextField(
                 value = value,
                 onValueChange = onValueChange,
+                minLines = minLines,
                 label = {
                     Text(
                         label,
                         fontSize = 15.sp,
                         color = if (error != null) MaterialTheme.colorScheme.error else stateColor,
-                        modifier = Modifier.padding(top = 10.dp)
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .padding(horizontal = 4.dp)
                     )
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .defaultMinSize(0.dp)
                     .onFocusChanged { isFocused = it.isFocused },
                 isError = error != null,
                 keyboardOptions = keyboardOptions,
@@ -464,7 +482,8 @@ fun DeliverySelector(
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .height(30.dp)
+                    .height(50.dp)
+                    .clip(RoundedCornerShape(100))
 
             ) {
                 if (isSelected) {
@@ -486,7 +505,10 @@ fun DeliverySelector(
                             textAlign = TextAlign.Center
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    shape = RoundedCornerShape(100),
                     enabled = enabled,
                     colors = FilterChipDefaults.filterChipColors(
                         containerColor = Color.Transparent,
@@ -524,6 +546,7 @@ fun StatusDropdown(
                 modifier = Modifier
                     .menuAnchor()
                     .fillMaxWidth(),
+
                 shape = RoundedCornerShape(12.dp),
                 enabled = enabled,
                 colors = OutlinedTextFieldDefaults.colors(
@@ -570,9 +593,9 @@ fun OrderFormContent(
     onStatusChange: (Status) -> Unit
 ) {
 
-    val order = state.order ?: return
+    state.order ?: return
 
-    SectionHeader("Customer Details", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+    SectionHeader("CUSTOMER DETAILS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     AppTextField(
         value = state.customerName,
@@ -580,6 +603,7 @@ fun OrderFormContent(
         label = "Full Name",
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         enabled = state.isEditing,
+        singleLine = true,
         error = state.customerNameError
     )
 
@@ -589,10 +613,11 @@ fun OrderFormContent(
         label = "Contact Number",
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         enabled = state.isEditing,
+        singleLine = true,
         error = state.contactError
     )
 
-    SectionHeader("Order Details", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+    SectionHeader("ORDER DETAILS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     AppTextField(
         value = state.item,
@@ -600,6 +625,7 @@ fun OrderFormContent(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         label = "Item Description",
         enabled = state.isEditing,
+        singleLine = false,
         error = state.itemError
     )
 
@@ -619,6 +645,7 @@ fun OrderFormContent(
                 keyboardType = KeyboardType.Decimal
             ),
             enabled = state.isEditing,
+            singleLine = true,
             error = state.priceError
         )
 
@@ -633,17 +660,18 @@ fun OrderFormContent(
                 keyboardType = KeyboardType.Number
             ),
             enabled = state.isEditing,
+            singleLine = true,
             error = state.unitsError
         )
     }
 
-    SectionHeader("Delivery Options", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+    SectionHeader("DELIVERY OPTIONS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     DeliverySelector(
         selected = state.delivery, onSelected = onDeliveryChange, enabled = state.isEditing
     )
 
-    SectionHeader("Delivery Status", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+    SectionHeader("DELIVERY STATUS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     StatusDropdown(
         selected = state.status, onSelected = onStatusChange, enabled = state.isEditing
