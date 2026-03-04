@@ -582,7 +582,7 @@ fun StatusDropdown(
                         focusedTextColor = MaterialTheme.colorScheme.tertiary,
                         unfocusedTextColor = MaterialTheme.colorScheme.tertiary,
                         disabledTextColor = MaterialTheme.colorScheme.onSecondary,
-                        disabledBorderColor = MaterialTheme.colorScheme.onSecondary
+                        disabledBorderColor = Color.Transparent
                     )
                 )
 
