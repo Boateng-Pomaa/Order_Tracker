@@ -183,6 +183,7 @@ fun CreateOrder(modifier: Modifier = Modifier,
 
             Button(
                 onClick = { viewModel.createOrder() },
+                enabled = state.orders[0].isFormValid,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                 ),

@@ -509,7 +509,7 @@ fun DeliverySelector(
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 14.sp,
                             textAlign = TextAlign.Center,
-                            color = if (!enabled && isSelected) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.secondary
+                            color = if ((!enabled && isSelected) || (enabled && isSelected)) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.secondary
                         )
 
                     },
