@@ -141,7 +141,7 @@ fun CreateOrder(modifier: Modifier = Modifier,
                 ) {
                     Box(
                         modifier = Modifier
-                            .height(40.dp)
+                            .height(44.dp)
                             .fillMaxWidth()
                     ) {
                         Image(
@@ -164,7 +164,7 @@ fun CreateOrder(modifier: Modifier = Modifier,
                 ) {
                     Box(
                         modifier = Modifier
-                            .height(40.dp)
+                            .height(44.dp)
                             .fillMaxWidth()
                     ) {
                         Image(
