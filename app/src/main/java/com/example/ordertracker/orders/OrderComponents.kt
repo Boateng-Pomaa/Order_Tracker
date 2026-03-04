@@ -506,8 +506,12 @@ fun DeliverySelector(
                         Text(
                             delivery.name.replace("_", " "),
                             modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Center,
+                            color = if (!enabled && isSelected) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.secondary
                         )
+
                     },
                     modifier = Modifier
                         .fillMaxWidth()
@@ -547,9 +551,7 @@ fun StatusDropdown(
                     .wrapContentWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .border(
-                        width = 0.dp,
-                        color = Color.Transparent,
-                        shape = RoundedCornerShape(12.dp)
+                        width = 0.dp, color = Color.Transparent, shape = RoundedCornerShape(12.dp)
                     )
             ) {
                 Image(
