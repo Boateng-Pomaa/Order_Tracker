@@ -134,7 +134,7 @@ fun CreateOrder(modifier: Modifier = Modifier,
                 Button(
                     onClick = { viewModel.addOrder() },
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(0.dp),
+                    contentPadding = PaddingValues(2.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent, contentColor = Color.Unspecified
                     )
@@ -157,7 +157,7 @@ fun CreateOrder(modifier: Modifier = Modifier,
                     onClick = { viewModel.removeLastOrder() },
                     enabled = state.orders.size > 1,
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(0.dp),
+                    contentPadding = PaddingValues(2.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent, contentColor = Color.Unspecified
                     )
@@ -264,7 +264,7 @@ fun OrderForm(
             label = "Price (GHC)",
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(horizontal = 16.dp, vertical = 5.dp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal
             ),

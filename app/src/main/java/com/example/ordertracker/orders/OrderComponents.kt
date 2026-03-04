@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -390,7 +391,7 @@ fun AppTextField(
                 )
         ) {
             Image(
-                painter = painterResource(R.drawable.background_overlay),
+                painter = painterResource(R.drawable.text_fields_background),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.matchParentSize()
@@ -412,6 +413,9 @@ fun AppTextField(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(
+                        vertical = 8.dp
+                    )
                     .defaultMinSize(0.dp)
                     .onFocusChanged { isFocused = it.isFocused },
                 isError = error != null,
@@ -533,50 +537,73 @@ fun StatusDropdown(
 
     Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
 
+
         ExposedDropdownMenuBox(
             expanded = expanded,
             onExpandedChange = { expanded = if (enabled) !expanded else false }) {
-            OutlinedTextField(
-                value = selected.name,
-                onValueChange = {},
-                readOnly = true,
-                trailingIcon = {
-                    ExposedDropdownMenuDefaults.TrailingIcon(expanded)
-                },
+            Box(
                 modifier = Modifier
-                    .menuAnchor()
-                    .fillMaxWidth(),
-
-                shape = RoundedCornerShape(12.dp),
-                enabled = enabled,
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedContainerColor = Color.Transparent,
-                    unfocusedContainerColor = Color.Transparent,
-                    focusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.secondary,
-                    focusedTextColor = MaterialTheme.colorScheme.tertiary,
-                    unfocusedTextColor = MaterialTheme.colorScheme.tertiary,
-                    disabledTextColor = MaterialTheme.colorScheme.onSecondary,
-                    disabledBorderColor = MaterialTheme.colorScheme.onSecondary
+                    .fillMaxWidth()
+                    .wrapContentWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .border(
+                        width = 0.dp,
+                        color = Color.Transparent,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.text_fields_background),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.matchParentSize()
                 )
-            )
 
-            ExposedDropdownMenu(
-                expanded = expanded,
-                modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
-                onDismissRequest = { expanded = false }) {
-                Status.entries.forEach { status ->
-                    DropdownMenuItem(text = {
-                        Text(
-                            status.name, color = MaterialTheme.colorScheme.tertiary
-                        )
-                    }, onClick = {
-                        onSelected(status)
-                        expanded = false
-                    })
+                OutlinedTextField(
+                    value = selected.name,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+                    },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+
+                    shape = RoundedCornerShape(12.dp),
+                    enabled = enabled,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        focusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedBorderColor = Color.Transparent,
+                        focusedTextColor = MaterialTheme.colorScheme.tertiary,
+                        unfocusedTextColor = MaterialTheme.colorScheme.tertiary,
+                        disabledTextColor = MaterialTheme.colorScheme.onSecondary,
+                        disabledBorderColor = MaterialTheme.colorScheme.onSecondary
+                    )
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
+                    onDismissRequest = { expanded = false }) {
+                    Status.entries.forEach { status ->
+                        DropdownMenuItem(text = {
+                            Text(
+                                status.name, color = MaterialTheme.colorScheme.tertiary
+                            )
+                        }, onClick = {
+                            onSelected(status)
+                            expanded = false
+                        })
+                    }
                 }
             }
+
         }
+
+
     }
 }
 
