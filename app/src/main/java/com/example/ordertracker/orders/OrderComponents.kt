@@ -26,6 +26,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -495,6 +497,7 @@ fun DeliverySelector(
                         painter = painterResource(R.drawable.save_button),
                         contentDescription = null,
                         contentScale = ContentScale.FillBounds,
+                        alpha = if (enabled) 1f else 0.5f,
                         modifier = Modifier.matchParentSize()
                     )
                 }
@@ -566,7 +569,11 @@ fun StatusDropdown(
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = {
-                        ExposedDropdownMenuDefaults.TrailingIcon(expanded)
+                        Icon(
+                            imageVector = Icons.Default.KeyboardArrowDown,
+                            contentDescription = "Expand",
+                            tint = if (!enabled) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     },
                     modifier = Modifier
                         .menuAnchor()
