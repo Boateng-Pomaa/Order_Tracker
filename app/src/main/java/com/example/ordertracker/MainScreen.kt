@@ -129,13 +129,9 @@ fun OrderTrackerBottomBar(
     navController: NavHostController
 ) {
     val items = listOf(BottomNavItems.Dashboard, BottomNavItems.Customers, BottomNavItems.Search)
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navController.currentBackStackEntry?.destination?.route
 
     BottomAppBar(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp),
         containerColor = MaterialTheme.colorScheme.background,
     ) {
         Row(

@@ -47,8 +47,6 @@ import com.example.ordertracker.orders.StatusDropdown
 import com.example.ordertracker.uistate.CreateOrderUiState
 import com.example.ordertracker.viewmodels.CreateOrderViewModel
 
-
-
 @Composable
 fun CreateOrderScreen(navController: NavHostController) {
     Scaffold(
@@ -56,26 +54,23 @@ fun CreateOrderScreen(navController: NavHostController) {
             OrderTrackerTopBar(
                 title = "New Order",
                 showBackButton = true,
-                onBackClick = { navController.navigateUp() }
-            )
-        }
-    ) { innerPadding ->
-
+                onBackClick = { navController.navigateUp() })
+        }) { innerPadding ->
         CreateOrder(
             modifier = Modifier.padding(innerPadding),
-            onOrderCreated = { navController.popBackStack() }
-        )
+            onOrderCreated = { navController.popBackStack() })
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateOrder(modifier: Modifier = Modifier,
-    onOrderCreated: () -> Unit, viewModel: CreateOrderViewModel = hiltViewModel()
+fun CreateOrder(
+    modifier: Modifier = Modifier,
+    onOrderCreated: () -> Unit,
+    viewModel: CreateOrderViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
-
 
     if (state.showSuccessDialog) {
         AlertDialog(
@@ -95,28 +90,27 @@ fun CreateOrder(modifier: Modifier = Modifier,
                 }
             })
     }
+
     Box(
         modifier = modifier
             .fillMaxSize()
-            .imePadding()
+            .background(MaterialTheme.colorScheme.background)
     ) {
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .imePadding()
                 .verticalScroll(scrollState)
-
         ) {
             state.orders.forEachIndexed { index, orderState ->
-
                 OrderForm(
                     state = orderState, index = index, viewModel = viewModel
                 )
-
                 Spacer(modifier = Modifier.height(24.dp))
             }
-            // Add spacer at the bottom to avoid overlapping with bottom buttons if needed
-            Spacer(modifier = Modifier.height(130.dp))
+
+            Spacer(modifier = Modifier.height(180.dp))
         }
 
         Column(
@@ -124,62 +118,62 @@ fun CreateOrder(modifier: Modifier = Modifier,
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.background)
+                .padding(bottom = 16.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.spacedBy(15.dp)
-            ) {
-                Button(
-                    onClick = { viewModel.addOrder() },
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(2.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent, contentColor = Color.Unspecified
-                    )
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .height(44.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.additional_order_button),
-                            contentDescription = null,
-                            contentScale = ContentScale.FillBounds,
-                            modifier = Modifier.matchParentSize()
-                        )
-                    }
-                }
-
-                Button(
-                    onClick = { viewModel.removeLastOrder() },
-                    enabled = state.orders.size > 1,
-                    modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(2.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent, contentColor = Color.Unspecified
-                    )
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .height(44.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.remove_additional_order_button),
-                            contentDescription = null,
-                            alpha = if (state.orders.size > 1) 1f else 0.5f,
-                            contentScale = ContentScale.FillBounds,
-                            modifier = Modifier.matchParentSize()
-                        )
-                    }
-                }
-            }
-
-
-            Spacer(modifier = Modifier.height(10.dp))
+//            Row(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .padding(horizontal = 16.dp),
+//                horizontalArrangement = Arrangement.spacedBy(15.dp)
+//            ) {
+//                Button(
+//                    onClick = { viewModel.addOrder() },
+//                    modifier = Modifier.weight(1f),
+//                    contentPadding = PaddingValues(2.dp),
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = Color.Transparent, contentColor = Color.Unspecified
+//                    )
+//                ) {
+//                    Box(
+//                        modifier = Modifier
+//                            .height(44.dp)
+//                            .fillMaxWidth()
+//                    ) {
+//                        Image(
+//                            painter = painterResource(R.drawable.additional_order_button),
+//                            contentDescription = null,
+//                            contentScale = ContentScale.FillBounds,
+//                            modifier = Modifier.matchParentSize()
+//                        )
+//                    }
+//                }
+//
+//                Button(
+//                    onClick = { viewModel.removeLastOrder() },
+//                    enabled = state.orders.size > 1,
+//                    modifier = Modifier.weight(1f),
+//                    contentPadding = PaddingValues(2.dp),
+//                    colors = ButtonDefaults.buttonColors(
+//                        containerColor = Color.Transparent, contentColor = Color.Unspecified
+//                    )
+//                ) {
+//                    Box(
+//                        modifier = Modifier
+//                            .height(44.dp)
+//                            .fillMaxWidth()
+//                    ) {
+//                        Image(
+//                            painter = painterResource(R.drawable.remove_additional_order_button),
+//                            contentDescription = null,
+//                            alpha = if (state.orders.size > 1) 1f else 0.5f,
+//                            contentScale = ContentScale.FillBounds,
+//                            modifier = Modifier.matchParentSize()
+//                        )
+//                    }
+//                }
+//            }
+//
+//            Spacer(modifier = Modifier.height(10.dp))
 
             Button(
                 onClick = { viewModel.createOrder() },
@@ -196,7 +190,6 @@ fun CreateOrder(modifier: Modifier = Modifier,
                         .height(56.dp)
                         .fillMaxWidth()
                 ) {
-
                     Image(
                         painter = painterResource(R.drawable.save_button),
                         contentDescription = null,
@@ -212,7 +205,6 @@ fun CreateOrder(modifier: Modifier = Modifier,
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -222,14 +214,13 @@ fun CreateOrder(modifier: Modifier = Modifier,
 fun OrderForm(
     state: CreateOrderUiState, index: Int, viewModel: CreateOrderViewModel
 ) {
-
     SectionHeader("CUSTOMER DETAILS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     AppTextField(
         value = state.customerName,
         onValueChange = { viewModel.onCustomerNameChange(index, it) },
         label = "Full Name",
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         singleLine = true,
         error = state.customerNameError
     )
@@ -238,7 +229,7 @@ fun OrderForm(
         value = state.contact,
         onValueChange = { viewModel.onContactChange(index, it) },
         label = "Contact Number",
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         singleLine = true,
         error = state.contactError
     )
@@ -248,7 +239,7 @@ fun OrderForm(
     AppTextField(
         value = state.item,
         onValueChange = { viewModel.onItemChange(index, it) },
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         singleLine = false,
         minLines = 4,
         label = "Item Description (e.g., Velvet Sofa Set)"
@@ -258,14 +249,13 @@ fun OrderForm(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-
         AppTextField(
             value = state.price,
             onValueChange = { viewModel.onPriceChange(index, it) },
             label = "Price (GHC)",
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 16.dp, vertical = 5.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal
             ),
@@ -279,7 +269,7 @@ fun OrderForm(
             label = "Units",
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 16.dp, vertical = 5.dp),
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number
             ),

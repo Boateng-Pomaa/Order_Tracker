@@ -65,35 +65,45 @@ fun OrderDetailsScreen(
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
-    Column(
+    Box(
         modifier = modifier
             .fillMaxSize()
-            .verticalScroll(scrollState)
-            .imePadding()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        OrderFormContent(state = state, onCustomerNameChange = {
-            viewModel.updateCustomerName(it)
-        }, onContactChange = {
-            viewModel.updateContact(it)
-        }, onItemChange = {
-            viewModel.updateItem(it)
-        }, onPriceChange = {
-            viewModel.updatePrice(it)
-        }, onUnitsChange = {
-            viewModel.updateUnits(it)
-        }, onDeliveryChange = {
-            viewModel.updateDelivery(it)
-        }, onStatusChange = {
-            viewModel.updateStatus(it)
-        })
+        // Scrollable content area: imePadding shrinks this area to avoid keyboard
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding()
+                .verticalScroll(scrollState)
+        ) {
+            OrderFormContent(state = state, onCustomerNameChange = {
+                viewModel.updateCustomerName(it)
+            }, onContactChange = {
+                viewModel.updateContact(it)
+            }, onItemChange = {
+                viewModel.updateItem(it)
+            }, onPriceChange = {
+                viewModel.updatePrice(it)
+            }, onUnitsChange = {
+                viewModel.updateUnits(it)
+            }, onDeliveryChange = {
+                viewModel.updateDelivery(it)
+            }, onStatusChange = {
+                viewModel.updateStatus(it)
+            })
 
-        Spacer(modifier = Modifier.height(24.dp))
+            // Spacer to allow scrolling past the fixed buttons
+            Spacer(modifier = Modifier.height(100.dp))
+        }
 
+        // Action buttons fixed at the bottom of the screen
         Row(
             modifier = Modifier
+                .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .background(MaterialTheme.colorScheme.background)
+                .padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -161,6 +171,5 @@ fun OrderDetailsScreen(
                 }
             }
         }
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }

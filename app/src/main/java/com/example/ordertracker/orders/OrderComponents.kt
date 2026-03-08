@@ -24,6 +24,8 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -49,6 +51,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +59,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -68,6 +72,8 @@ import androidx.compose.ui.unit.sp
 import com.example.ordertracker.R
 import com.example.ordertracker.uistate.OrderDetailsUiState
 import com.example.ordertracker.uistate.OrderUiState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -370,12 +376,14 @@ fun AppTextField(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
     var isFocused by remember { mutableStateOf(false) }
+    val bringIntoViewRequester = remember { BringIntoViewRequester() }
+    val coroutineScope = rememberCoroutineScope()
 
     val stateColor = when {
         isFocused -> MaterialTheme.colorScheme.onSurfaceVariant
         else -> MaterialTheme.colorScheme.secondary
     }
-    Column(modifier = modifier) {
+    Column(modifier = modifier.bringIntoViewRequester(bringIntoViewRequester)) {
 
         Box(
             modifier = Modifier
@@ -408,8 +416,7 @@ fun AppTextField(
                         label,
                         fontSize = 15.sp,
                         color = if (error != null) MaterialTheme.colorScheme.error else stateColor,
-                        modifier = Modifier
-                            .align(Alignment.Center)
+                        modifier = Modifier.align(Alignment.Center)
                     )
                 },
 
@@ -418,8 +425,17 @@ fun AppTextField(
                     .padding(
                         vertical = 8.dp
                     )
+
                     .defaultMinSize(0.dp)
-                    .onFocusChanged { isFocused = it.isFocused },
+                    .onFocusChanged { focusState ->
+                        isFocused = focusState.isFocused
+                        if (focusState.isFocused) {
+                            coroutineScope.launch {
+                                delay(300)
+                                bringIntoViewRequester.bringIntoView()
+                            }
+                        }
+                    },
                 isError = error != null,
                 keyboardOptions = keyboardOptions,
                 singleLine = singleLine,
@@ -479,7 +495,7 @@ fun DeliverySelector(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Delivery.entries.forEach { delivery ->
@@ -542,7 +558,7 @@ fun StatusDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
 
 
         ExposedDropdownMenuBox(
