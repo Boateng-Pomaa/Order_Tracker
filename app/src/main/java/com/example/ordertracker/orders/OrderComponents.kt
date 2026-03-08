@@ -386,7 +386,7 @@ fun AppTextField(
                     } else if (isFocused) {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     } else {
-                        Color.Transparent
+                        MaterialTheme.colorScheme.secondary
                     }, shape = RoundedCornerShape(12.dp)
                 )
         ) {
@@ -408,9 +408,9 @@ fun AppTextField(
                         color = if (error != null) MaterialTheme.colorScheme.error else stateColor,
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .padding(horizontal = 4.dp)
                     )
                 },
+
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(

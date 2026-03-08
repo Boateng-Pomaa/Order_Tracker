@@ -1,13 +1,16 @@
 package com.example.ordertracker
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.BottomAppBar
@@ -84,13 +87,24 @@ fun OrderTrackerTopBar(
 ) {
     TopAppBar(
         title = {
-            Box(
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(end = if (showBackButton) 48.dp else 16.dp),
-                contentAlignment = Alignment.Center
+                    .padding(end = if (showBackButton) 48.dp else 16.dp)
             ) {
-                Text(text = title, style = MaterialTheme.typography.titleLarge, fontSize = 24.sp)
+                Text(
+                    text = title, style = MaterialTheme.typography.titleLarge, fontSize = 24.sp
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Box(
+                    modifier = Modifier
+                        .width(24.dp)
+                        .height(1.dp)
+                        .background(color = MaterialTheme.colorScheme.tertiary)
+                )
             }
         }, navigationIcon = {
             if (showBackButton) {

@@ -1,8 +1,9 @@
 package com.example.ordertracker.orders
 
 enum class Delivery(val label:String) {
-    SELF_PICKUP("Self Pickup"),
-    DELIVERY("Delivery")
+    DELIVERY("Delivery"),
+    SELF_PICKUP("Self Pickup")
+
 }
 
 enum class Status(val label:String) {

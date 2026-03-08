@@ -251,7 +251,7 @@ fun OrderForm(
         modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
         singleLine = false,
         minLines = 4,
-        label = "Item Description"
+        label = "Item Description (e.g., Velvet Sofa Set)"
     )
 
     Row(
