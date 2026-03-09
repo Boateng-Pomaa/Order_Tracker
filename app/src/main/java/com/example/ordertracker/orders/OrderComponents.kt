@@ -35,12 +35,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -59,7 +57,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.focus.onFocusEvent
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -389,6 +386,7 @@ fun AppTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .padding(2.dp)
                 .clip(RoundedCornerShape(12.dp))
                 .border(
                     width = 1.dp, color = if (error != null) {
@@ -396,7 +394,7 @@ fun AppTextField(
                     } else if (isFocused) {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     } else {
-                        MaterialTheme.colorScheme.secondary
+                        MaterialTheme.colorScheme.secondary.copy(0.12f)
                     }, shape = RoundedCornerShape(12.dp)
                 )
         ) {
@@ -535,8 +533,10 @@ fun DeliverySelector(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(50.dp),
+
                     shape = RoundedCornerShape(100),
                     enabled = enabled,
+                    border = BorderStroke(1.dp, MaterialTheme.colorScheme.secondary.copy(0.12f)),
                     colors = FilterChipDefaults.filterChipColors(
                         containerColor = Color.Transparent,
                         selectedContainerColor = Color.Transparent,

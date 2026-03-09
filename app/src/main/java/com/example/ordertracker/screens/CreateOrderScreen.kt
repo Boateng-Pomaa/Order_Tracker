@@ -278,11 +278,14 @@ fun OrderForm(
         )
     }
 
+    Spacer(modifier = Modifier.height(32.dp))
+
     SectionHeader("DELIVERY OPTIONS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     DeliverySelector(
         selected = state.delivery, onSelected = { viewModel.onDeliveryChange(index, it) })
 
+    Spacer(modifier = Modifier.height(32.dp))
     SectionHeader("DELIVERY STATUS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     StatusDropdown(

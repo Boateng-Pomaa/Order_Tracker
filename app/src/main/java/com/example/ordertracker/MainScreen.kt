@@ -94,7 +94,10 @@ fun OrderTrackerTopBar(
                     .padding(end = if (showBackButton) 48.dp else 16.dp)
             ) {
                 Text(
-                    text = title, style = MaterialTheme.typography.titleLarge, fontSize = 24.sp
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 24.sp,
+                    color = MaterialTheme.colorScheme.onTertiary
                 )
 
                 Spacer(modifier = Modifier.height(4.dp))
