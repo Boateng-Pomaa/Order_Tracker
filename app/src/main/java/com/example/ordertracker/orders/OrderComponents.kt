@@ -109,7 +109,7 @@ fun OrderItems(
 
                 Box(
                     modifier = Modifier
-                        .width(4.dp)
+                        .width(2.dp)
                         .background(accentColor)
                         .fillMaxHeight()
                 )
@@ -334,7 +334,7 @@ fun Home(
 ) {
 
     LazyColumn(
-        contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)
+        contentPadding = PaddingValues(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
             PendingOrders(state = OrderUiState.Success(orders))
@@ -470,12 +470,13 @@ fun AppTextField(
 fun SectionHeader(title: String, accentColor: Color) {
     Text(
         text = title,
-        style = MaterialTheme.typography.labelLarge,
+        fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
+        fontSize = 11.sp,
         color = MaterialTheme.colorScheme.secondary,
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 5.dp)
+            .padding(vertical = 5.dp)
             .drawBehind {
-                val strokeWidth = 4.dp.toPx()
+                val strokeWidth = 2.dp.toPx()
                 drawLine(
                     color = accentColor,
                     start = Offset(0f, 0f),
@@ -493,7 +494,7 @@ fun DeliverySelector(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 16.dp),
+            .padding(vertical = 16.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         Delivery.entries.forEach { delivery ->
@@ -558,7 +559,7 @@ fun StatusDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
+    Column(modifier = Modifier.padding(vertical = 16.dp)) {
 
 
         ExposedDropdownMenuBox(
@@ -653,7 +654,7 @@ fun OrderFormContent(
         value = state.customerName,
         onValueChange = onCustomerNameChange,
         label = "Full Name",
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.padding(vertical = 8.dp),
         enabled = state.isEditing,
         singleLine = true,
         error = state.customerNameError
@@ -663,7 +664,7 @@ fun OrderFormContent(
         value = state.contact,
         onValueChange = onContactChange,
         label = "Contact Number",
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.padding(vertical = 8.dp),
         enabled = state.isEditing,
         singleLine = true,
         error = state.contactError
@@ -674,7 +675,7 @@ fun OrderFormContent(
     AppTextField(
         value = state.item,
         onValueChange = onItemChange,
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.padding(vertical = 8.dp),
         label = "Item Description",
         enabled = state.isEditing,
         singleLine = false,
@@ -692,7 +693,7 @@ fun OrderFormContent(
             label = "Price (Ghc)",
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(vertical = 8.dp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal
             ),
@@ -707,7 +708,7 @@ fun OrderFormContent(
             label = "Units",
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 16.dp, vertical = 5.dp),
+                .padding(vertical = 5.dp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number
             ),

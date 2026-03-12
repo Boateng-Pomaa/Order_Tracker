@@ -100,6 +100,7 @@ fun CreateOrder(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(horizontal = 20.dp)
                 .imePadding()
                 .verticalScroll(scrollState)
         ) {
@@ -181,7 +182,7 @@ fun CreateOrder(
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
                 ),
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 20.dp),
                 contentPadding = PaddingValues(0.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
@@ -220,7 +221,7 @@ fun OrderForm(
         value = state.customerName,
         onValueChange = { viewModel.onCustomerNameChange(index, it) },
         label = "Full Name",
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.padding(vertical = 8.dp),
         singleLine = true,
         error = state.customerNameError
     )
@@ -229,7 +230,7 @@ fun OrderForm(
         value = state.contact,
         onValueChange = { viewModel.onContactChange(index, it) },
         label = "Contact Number",
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.padding(vertical = 8.dp),
         singleLine = true,
         error = state.contactError
     )
@@ -239,7 +240,7 @@ fun OrderForm(
     AppTextField(
         value = state.item,
         onValueChange = { viewModel.onItemChange(index, it) },
-        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+        modifier = Modifier.padding(vertical = 8.dp),
         singleLine = false,
         minLines = 4,
         label = "Item Description (e.g., Velvet Sofa Set)"
@@ -255,7 +256,7 @@ fun OrderForm(
             label = "Price (GHC)",
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(vertical = 8.dp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Decimal
             ),
@@ -269,7 +270,7 @@ fun OrderForm(
             label = "Units",
             modifier = Modifier
                 .weight(1f)
-                .padding(horizontal = 16.dp, vertical = 8.dp),
+                .padding(vertical = 8.dp),
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.Number
             ),

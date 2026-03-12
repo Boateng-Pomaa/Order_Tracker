@@ -6,6 +6,7 @@
             <action android:name="android.intent.action.MAIN" />
         </intent>
     </queries>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <application
         android:name=".OrderTrackerApplication"
@@ -20,8 +21,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.OrderTracker">
+            android:theme="@style/Theme.OrderTracker"
+            android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

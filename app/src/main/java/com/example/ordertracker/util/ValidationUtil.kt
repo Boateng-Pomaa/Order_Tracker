@@ -24,4 +24,12 @@ object ValidationUtil {
             else -> null
         }
     }
+
+    fun validateEmail(email: String): String? =
+        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email)
+                .matches()
+        ) "Enter a valid email" else null
+
+    fun validateAddress(address: String): String? =
+        if (address.isBlank()) "Enter a valid address" else null
 }
