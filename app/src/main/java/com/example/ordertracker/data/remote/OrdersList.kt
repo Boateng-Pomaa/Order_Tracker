@@ -19,7 +19,7 @@ class OrdersList : OrderApi {
                 units = 1,
                 status = Status.PICKED,
                 delivery = Delivery.DELIVERY,
-                contact = "00987654"
+                contact = "0098765487"
             ), OrderModel(
                 id = 2,
                 customerName = "Kwaku",

@@ -30,6 +30,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,11 +40,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.ordertracker.navigation.Routes
+import com.example.ordertracker.screens.CreateCustomer
 import com.example.ordertracker.screens.CreateOrderScreen
 import com.example.ordertracker.screens.CustomersScreen
 import com.example.ordertracker.screens.DashboardScreen
 import com.example.ordertracker.screens.DetailsScreen
-import com.example.ordertracker.screens.OrderDetailsScreen
 import com.example.ordertracker.screens.SearchScreen
 
 
@@ -76,6 +78,10 @@ fun MainScreen() {
         composable(BottomNavItems.Search.route) {
             SearchScreen(navController)
         }
+
+        composable(Routes.NEW_CUSTOMER) {
+            CreateCustomer(navController)
+        }
     }
 }
 
@@ -87,42 +93,42 @@ fun OrderTrackerTopBar(
 ) {
     TopAppBar(
         title = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = if (showBackButton) 48.dp else 16.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.onTertiary
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = if (showBackButton) 48.dp else 16.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Box(
-                    modifier = Modifier
-                        .width(24.dp)
-                        .height(1.dp)
-                        .background(color = MaterialTheme.colorScheme.tertiary)
+                    .width(24.dp)
+                    .height(1.dp)
+                    .background(color = MaterialTheme.colorScheme.tertiary)
+            )
+        }
+    }, navigationIcon = {
+        if (showBackButton) {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back"
                 )
             }
-        }, navigationIcon = {
-            if (showBackButton) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-            }
-        }, colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            titleContentColor = MaterialTheme.colorScheme.secondary,
-            navigationIconContentColor = MaterialTheme.colorScheme.secondary
-        )
+        }
+    }, colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.background,
+        titleContentColor = MaterialTheme.colorScheme.secondary,
+        navigationIconContentColor = MaterialTheme.colorScheme.secondary
+    )
     )
 }
 
@@ -132,7 +138,8 @@ fun OrderTrackerBottomBar(
     navController: NavHostController
 ) {
     val items = listOf(BottomNavItems.Dashboard, BottomNavItems.Customers, BottomNavItems.Search)
-    val currentRoute = navController.currentBackStackEntry?.destination?.route
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
     BottomAppBar(
         containerColor = MaterialTheme.colorScheme.background,
@@ -143,7 +150,7 @@ fun OrderTrackerBottomBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { item ->
-                val isSelected = currentRoute == item.route
+                val isSelected = currentDestination?.hierarchy?.any { it.route == item.route } == true
                 val color =
                     if (isSelected) MaterialTheme.colorScheme.onSurfaceVariant else Color.Gray
 
@@ -151,7 +158,9 @@ fun OrderTrackerBottomBar(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.clickable {
                         navController.navigate(item.route) {
-                            popUpTo(BottomNavItems.Dashboard.route) { saveState = true }
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
                             launchSingleTop = true
                             restoreState = true
                         }
@@ -181,4 +190,3 @@ fun OrderTrackerFAB(onClick: () -> Unit) {
         )
     }
 }
-

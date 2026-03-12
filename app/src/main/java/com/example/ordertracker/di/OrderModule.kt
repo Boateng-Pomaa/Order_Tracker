@@ -1,7 +1,11 @@
 package com.example.ordertracker.di
 
+import com.example.ordertracker.data.remote.CustomerApi
+import com.example.ordertracker.data.remote.CustomerList
 import com.example.ordertracker.data.remote.OrderApi
 import com.example.ordertracker.data.remote.OrdersList
+import com.example.ordertracker.data.repository.CustomerRepository
+import com.example.ordertracker.data.repository.CustomerRepositoryImpl
 import com.example.ordertracker.data.repository.OrderRepository
 import com.example.ordertracker.data.repository.OrderRepositoryImpl
 import dagger.Module
@@ -25,5 +29,19 @@ object OrderModule {
         api: OrderApi
     ): OrderRepository {
         return OrderRepositoryImpl(api)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCustomerApi(): CustomerApi {
+        return CustomerList()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCustomerRepository(
+        api: CustomerApi
+    ): CustomerRepository {
+        return CustomerRepositoryImpl(api)
     }
 }
