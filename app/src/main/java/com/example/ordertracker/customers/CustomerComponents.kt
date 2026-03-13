@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import android.provider.ContactsContract
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +28,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
@@ -46,6 +48,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -601,26 +604,45 @@ fun CustomerHome(
     onCustomerClick: (Long) -> Unit,
     onNewCustomerClick: () -> Unit
 ) {
+    val listState = rememberLazyListState()
+
+    val isCollapsed by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+        }
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp)
             .padding(top = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            "Your registered clients",
-            color = MaterialTheme.colorScheme.secondary,
-            fontSize = 15.sp,
-            fontWeight = MaterialTheme.typography.labelSmall.fontWeight
+        AnimatedVisibility(visible = !isCollapsed) {
 
-        )
-        SearchBar(onClick = onSearchClick)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
 
-        NewCustomer(onClick = onNewCustomerClick)
+                Text(
+                    "Your registered clients",
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontSize = 15.sp,
+                    fontWeight = MaterialTheme.typography.labelSmall.fontWeight
+
+                )
+                SearchBar(onClick = onSearchClick)
+
+                NewCustomer(onClick = onNewCustomerClick)
+            }
+        }
 
         LazyColumn(
-            modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(12.dp)
+            state = listState,
+            modifier = Modifier.weight(1f),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             items(customers, key = { it.id }) { customer ->
                 CustomerItem(
