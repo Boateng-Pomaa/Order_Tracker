@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
@@ -262,6 +263,65 @@ fun CustomerItem(customerModel: CustomerModel, onCustomerClick: (Long) -> Unit) 
     }
 }
 
+@Composable
+fun ChooseFromCustomer(onCustomerSelected: (id: Number, name: String, phone: String) -> Unit) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .clip(RoundedCornerShape(100))
+            .clickable {
+
+            }) {
+        Image(
+            painter = painterResource(id = R.drawable.background_border),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize()
+        )
+        Row(
+            modifier = Modifier
+                .padding(vertical = 10.dp)
+                .padding(start = 14.dp, end = 10.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.customer),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+            )
+
+            Column {
+                Text(
+                    "SELECT CUSTOMER",
+                    fontSize = 12.sp,
+                    fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    letterSpacing = 1.68.sp,
+                    textAlign = TextAlign.Left
+                )
+
+                Text(
+                    "Choose from customers",
+                    fontSize = 11.sp,
+                    fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
+            Box(modifier = Modifier.wrapContentSize()) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "right arrow",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+        }
+    }
+}
+
 
 @Composable
 fun ChooseFromContact(
@@ -398,90 +458,94 @@ fun ChooseFromContact(
 
 @Composable
 fun InputTextField(
+    modifier: Modifier = Modifier,
     value: String,
     onValueChange: (String) -> Unit,
     label: String,
     error: String? = null,
-    minLines: Int = 1
+    minLines: Int = 1,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
 ) {
 
     var isFocused by remember { mutableStateOf(false) }
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(12.dp))
-    ) {
-        Image(
-            painter = painterResource(R.drawable.text_fields_background),
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier.matchParentSize()
-        )
-
-        Column(
+    Column(modifier = modifier) {
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .border(
-                    width = 1.dp,
-                    color = if (error != null) MaterialTheme.colorScheme.error
-                    else if (isFocused) MaterialTheme.colorScheme.onSurfaceVariant
-                    else MaterialTheme.colorScheme.secondary.copy(0.12f),
-                    shape = RoundedCornerShape(12.dp)
-                )
+                .clip(RoundedCornerShape(12.dp))
         ) {
+            Image(
+                painter = painterResource(R.drawable.text_fields_background),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
+            )
 
-            if (isFocused || value.isNotEmpty()) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier
-                        .padding(horizontal = 12.dp)
-                        .padding(top = 10.dp)
-                )
-
-            }
-
-
-            OutlinedTextField(
-                value = value,
-                onValueChange = onValueChange,
-                shape = RoundedCornerShape(12.dp),
-
-                placeholder = {
-                    if (!isFocused && value.isEmpty()) {
-                        Label(label)
-                    }
-                },
-
-                minLines = minLines,
-                textStyle = LocalTextStyle.current.copy(
-                    color = MaterialTheme.colorScheme.onTertiary
-                ),
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .onFocusChanged { isFocused = it.isFocused },
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = Color.Transparent,
-                    unfocusedBorderColor = Color.Transparent,
-                    cursorColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                    unfocusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
+                    .wrapContentHeight()
+                    .border(
+                        width = 1.dp,
+                        color = if (error != null) MaterialTheme.colorScheme.error
+                        else if (isFocused) MaterialTheme.colorScheme.onSurfaceVariant
+                        else MaterialTheme.colorScheme.secondary.copy(0.12f),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+            ) {
+
+                if (isFocused || value.isNotEmpty()) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = if (error != null) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .padding(horizontal = 12.dp)
+                            .padding(top = 10.dp)
+                    )
+
+                }
+
+
+                OutlinedTextField(
+                    value = value,
+                    onValueChange = onValueChange,
+                    shape = RoundedCornerShape(12.dp),
+
+                    placeholder = {
+                        if (!isFocused && value.isEmpty()) {
+                            Label(label)
+                        }
+                    },
+
+                    minLines = minLines,
+                    textStyle = LocalTextStyle.current.copy(
+                        color = MaterialTheme.colorScheme.onTertiary
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .onFocusChanged { isFocused = it.isFocused },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = Color.Transparent,
+                        unfocusedBorderColor = Color.Transparent,
+                        cursorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
+                    )
                 )
+            }
+        }
+        if (error != null) {
+            Text(
+                text = error,
+                color = MaterialTheme.colorScheme.error,
+                style = MaterialTheme.typography.labelSmall,
+                modifier = Modifier.padding(start = 4.dp, top = 4.dp)
             )
         }
-    }
-    if (error != null) {
-        Text(
-            text = error,
-            color = MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.labelSmall,
-            modifier = Modifier.padding(start = 4.dp, top = 4.dp)
-        )
-    }
 
+    }
 }
 
 @Composable
@@ -616,7 +680,7 @@ fun CustomerForm(
                 containerColor = Color.Transparent,
             ),
             contentPadding = PaddingValues(0.dp),
-            shape = RoundedCornerShape(12.dp)
+            shape = RoundedCornerShape(16.dp)
         ) {
             Box(
                 modifier = Modifier
@@ -624,16 +688,15 @@ fun CustomerForm(
                     .fillMaxWidth()
             ) {
                 Image(
-                    painter = painterResource(R.drawable.save_button),
+                    painter = painterResource(R.drawable.text_fields_background),
                     contentDescription = null,
                     contentScale = ContentScale.FillBounds,
                     modifier = Modifier.matchParentSize()
                 )
                 Text(
                     text = "Save",
-                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
                     fontSize = 16.sp,
-                    lineHeight = 24.sp,
                     modifier = Modifier.align(Alignment.Center)
                 )
             }

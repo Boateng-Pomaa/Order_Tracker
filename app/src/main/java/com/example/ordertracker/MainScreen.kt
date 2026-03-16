@@ -1,21 +1,26 @@
 package com.example.ordertracker
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -24,9 +29,13 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -93,42 +102,42 @@ fun OrderTrackerTopBar(
 ) {
     TopAppBar(
         title = {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(end = if (showBackButton) 48.dp else 16.dp)
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontSize = 24.sp,
-                color = MaterialTheme.colorScheme.onTertiary
-            )
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Box(
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-                    .width(24.dp)
-                    .height(1.dp)
-                    .background(color = MaterialTheme.colorScheme.tertiary)
-            )
-        }
-    }, navigationIcon = {
-        if (showBackButton) {
-            IconButton(onClick = onBackClick) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "Back"
+                    .fillMaxWidth()
+                    .padding(end = if (showBackButton) 48.dp else 16.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 24.sp,
+                    color = MaterialTheme.colorScheme.onTertiary
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Box(
+                    modifier = Modifier
+                        .width(24.dp)
+                        .height(1.dp)
+                        .background(color = MaterialTheme.colorScheme.tertiary)
                 )
             }
-        }
-    }, colors = TopAppBarDefaults.topAppBarColors(
-        containerColor = MaterialTheme.colorScheme.background,
-        titleContentColor = MaterialTheme.colorScheme.secondary,
-        navigationIconContentColor = MaterialTheme.colorScheme.secondary
-    )
+        }, navigationIcon = {
+            if (showBackButton) {
+                IconButton(onClick = onBackClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
+                }
+            }
+        }, colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.secondary,
+            navigationIconContentColor = MaterialTheme.colorScheme.secondary
+        )
     )
 }
 
@@ -136,7 +145,7 @@ fun OrderTrackerTopBar(
 @Composable
 fun MainScreensTopBar(
     title: String
-){
+) {
     TopAppBar(
         title = {
             Column(
@@ -178,7 +187,8 @@ fun OrderTrackerBottomBar(
             verticalAlignment = Alignment.CenterVertically
         ) {
             items.forEach { item ->
-                val isSelected = currentDestination?.hierarchy?.any { it.route == item.route } == true
+                val isSelected =
+                    currentDestination?.hierarchy?.any { it.route == item.route } == true
                 val color =
                     if (isSelected) MaterialTheme.colorScheme.onSurfaceVariant else Color.Gray
 
@@ -208,13 +218,33 @@ fun OrderTrackerBottomBar(
 
 @Composable
 fun OrderTrackerFAB(onClick: () -> Unit) {
-    FloatingActionButton(
-        onClick = onClick, containerColor = Color.Transparent
+    Box(
+        modifier = Modifier
+            .size(56.dp)
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(
+                onClick = onClick,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ), contentAlignment = Alignment.Center
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.fab_background),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.FillBounds,
+        )
+        Box(
+            modifier = Modifier
+                .matchParentSize()
+                .background(Color.Black.copy(alpha = 0.3f))
+        )
+
         Icon(
-            painter = painterResource(R.drawable.add_button),
+            imageVector = Icons.Default.Add,
             contentDescription = "Add Order",
-            tint = Color.Unspecified
+            tint = Color.Black,
+            modifier = Modifier.size(28.dp)
         )
     }
 }

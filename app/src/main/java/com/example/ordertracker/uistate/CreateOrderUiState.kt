@@ -22,5 +22,5 @@ data class CreateOrderUiState(
     val showSuccessDialog: Boolean = false
 ) {
     val isFormValid: Boolean
-        get() = customerName.isNotBlank() && contact.isNotBlank() && item.isNotBlank() && price.isNotBlank() && units.isNotBlank()
+        get() = customerName.isNotBlank() && contact.isNotBlank() && item.isNotBlank() && price.isNotBlank() && units.isNotBlank() && customerNameError == null && contactError == null && itemError == null && priceError == null && unitsError == null
 }

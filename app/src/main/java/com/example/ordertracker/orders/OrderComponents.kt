@@ -258,11 +258,10 @@ fun OrderItems(
                             IconButton(
                                 onClick = { onDeleteOrderClick() }, modifier = Modifier.size(24.dp)
                             ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.img_delete),
-                                    modifier = Modifier.size(24.dp),
+                                Image(
+                                    painter = painterResource(id = R.drawable.delete_order),
+                                    modifier = Modifier.size(32.dp),
                                     contentDescription = "Delete order",
-                                    tint = MaterialTheme.colorScheme.surface
                                 )
                             }
                         }
@@ -509,7 +508,7 @@ fun DeliverySelector(
             ) {
                 if (isSelected) {
                     Image(
-                        painter = painterResource(R.drawable.save_button),
+                        painter = painterResource(R.drawable.selector_background),
                         contentDescription = null,
                         contentScale = ContentScale.FillBounds,
                         alpha = if (enabled) 1f else 0.5f,
@@ -527,7 +526,7 @@ fun DeliverySelector(
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 14.sp,
                             textAlign = TextAlign.Center,
-                            color = if ((!enabled && isSelected) || (enabled && isSelected)) MaterialTheme.colorScheme.background else MaterialTheme.colorScheme.secondary
+                            color = if ((!enabled && isSelected) || (enabled && isSelected)) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.secondary
                         )
 
                     },

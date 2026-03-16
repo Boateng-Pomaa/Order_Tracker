@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -44,6 +45,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.ordertracker.OrderTrackerTopBar
 import com.example.ordertracker.R
+import com.example.ordertracker.customers.ChooseFromCustomer
+import com.example.ordertracker.customers.InputTextField
 import com.example.ordertracker.orders.AppTextField
 import com.example.ordertracker.orders.DeliverySelector
 import com.example.ordertracker.orders.SectionHeader
@@ -249,24 +252,25 @@ fun CreateOrder(
                 ),
                 modifier = Modifier.padding(horizontal = 20.dp),
                 contentPadding = PaddingValues(0.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(16.dp)
             ) {
                 Box(
                     modifier = Modifier
                         .height(56.dp)
                         .fillMaxWidth()
+
                 ) {
                     Image(
-                        painter = painterResource(R.drawable.save_button),
+                        painter = painterResource(R.drawable.text_fields_background),
                         contentDescription = null,
                         contentScale = ContentScale.FillBounds,
                         modifier = Modifier.matchParentSize()
                     )
                     Text(
                         text = "Save Order",
-                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
+                        color = MaterialTheme.colorScheme.onTertiary,
                         fontSize = 16.sp,
-                        lineHeight = 24.sp,
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
@@ -281,67 +285,64 @@ fun OrderForm(
     state: CreateOrderUiState, index: Int, viewModel: CreateOrderViewModel
 ) {
     SectionHeader("CUSTOMER DETAILS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
-
-    AppTextField(
+    InputTextField(
         value = state.customerName,
         onValueChange = { viewModel.onCustomerNameChange(index, it) },
         label = "Full Name",
-        modifier = Modifier.padding(vertical = 8.dp),
-        singleLine = true,
         error = state.customerNameError
     )
 
-    AppTextField(
+    Spacer(modifier = Modifier.height(16.dp))
+
+    InputTextField(
         value = state.contact,
         onValueChange = { viewModel.onContactChange(index, it) },
         label = "Contact Number",
-        modifier = Modifier.padding(vertical = 8.dp),
-        singleLine = true,
         error = state.contactError
     )
 
+    Spacer(modifier = Modifier.height(32.dp))
+
+
     SectionHeader("ORDER DETAILS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
-    AppTextField(
+    InputTextField(
         value = state.item,
         onValueChange = { viewModel.onItemChange(index, it) },
-        modifier = Modifier.padding(vertical = 8.dp),
-        singleLine = false,
         minLines = 4,
-        label = "Item Description (e.g., Velvet Sofa Set)"
+        label = "Item Description (e.g., Velvet Sofa Set)",
+        error = state.itemError
     )
 
-    Row(
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        AppTextField(
-            value = state.price,
-            onValueChange = { viewModel.onPriceChange(index, it) },
-            label = "Price (GHC)",
-            modifier = Modifier
-                .weight(1f)
-                .padding(vertical = 8.dp),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Decimal
-            ),
-            singleLine = true,
-            error = state.priceError
-        )
+    Spacer(modifier = Modifier.height(16.dp))
 
-        AppTextField(
-            value = state.units,
-            onValueChange = { viewModel.onUnitsChange(index, it) },
-            label = "Units",
-            modifier = Modifier
-                .weight(1f)
-                .padding(vertical = 8.dp),
-            keyboardOptions = KeyboardOptions(
-                keyboardType = KeyboardType.Number
-            ),
-            singleLine = true,
-            error = state.unitsError
-        )
+    Row(
+
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Box(modifier = Modifier.weight(1f)) {
+            InputTextField(
+                value = state.price,
+                onValueChange = { viewModel.onPriceChange(index, it) },
+                label = "Price (GHC)",
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                error = state.priceError
+            )
+        }
+
+        Box(modifier = Modifier.weight(1f)) {
+            InputTextField(
+                value = state.units,
+                onValueChange = { viewModel.onUnitsChange(index, it) },
+                label = "Units",
+                modifier = Modifier.fillMaxWidth(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                error = state.unitsError
+            )
+        }
+
     }
 
     Spacer(modifier = Modifier.height(32.dp))
