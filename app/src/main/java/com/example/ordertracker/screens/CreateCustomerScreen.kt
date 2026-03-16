@@ -1,5 +1,6 @@
 package com.example.ordertracker.screens
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +11,10 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -20,17 +24,25 @@ import com.example.ordertracker.customers.CustomerForm
 import com.example.ordertracker.viewmodels.CreateCustomerViewModel
 
 @Composable
-fun CreateCustomer(navController: NavHostController) {
-    Scaffold(topBar = {
-        OrderTrackerTopBar(
-            title = "New Customer",
-            showBackButton = true,
-            onBackClick = { navController.navigateUp() })
-    }) { innerPadding ->
-        CustomerCreated(
-            modifier = Modifier.padding(innerPadding),
-            onCustomerCreated = { navController.popBackStack() }
-        )
+fun CreateCustomer(navController: NavHostController, viewModel: CreateCustomerViewModel = hiltViewModel()) {
+    val state by viewModel.uiState.collectAsState()
+    
+    Box(modifier = Modifier.fillMaxSize()) {
+        Scaffold(
+            modifier = Modifier.blur(if (state.showSuccessDialog) 10.dp else 0.dp),
+            topBar = {
+                OrderTrackerTopBar(
+                    title = "New Customer",
+                    showBackButton = true,
+                    onBackClick = { navController.navigateUp() })
+            }
+        ) { innerPadding ->
+            CustomerCreated(
+                modifier = Modifier.padding(innerPadding),
+                onCustomerCreated = { navController.popBackStack() },
+                viewModel = viewModel
+            )
+        }
     }
 }
 
@@ -38,7 +50,7 @@ fun CreateCustomer(navController: NavHostController) {
 fun CustomerCreated(
     modifier: Modifier = Modifier,
     onCustomerCreated: () -> Unit,
-    viewModel: CreateCustomerViewModel = hiltViewModel()
+    viewModel: CreateCustomerViewModel
 ) {
     val scrollState = rememberScrollState()
 

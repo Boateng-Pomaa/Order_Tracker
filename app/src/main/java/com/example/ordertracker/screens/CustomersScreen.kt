@@ -15,8 +15,8 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import com.example.ordertracker.BottomNavItems
+import com.example.ordertracker.MainScreensTopBar
 import com.example.ordertracker.OrderTrackerBottomBar
-import com.example.ordertracker.OrderTrackerTopBar
 import com.example.ordertracker.customers.CustomerHome
 import com.example.ordertracker.navigation.Routes
 import com.example.ordertracker.uistate.CustomersUiState
@@ -25,7 +25,7 @@ import com.example.ordertracker.viewmodels.CustomersViewModel
 @Composable
 fun CustomersScreen(navController: NavHostController) {
     Scaffold(topBar = {
-        OrderTrackerTopBar(
+        MainScreensTopBar(
             title = "Customers"
         )
     }, bottomBar = {

@@ -34,7 +34,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -45,7 +44,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
@@ -55,7 +53,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -64,6 +64,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.ordertracker.R
@@ -372,7 +373,8 @@ fun ChooseFromContact(
                     fontSize = 12.sp,
                     fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    letterSpacing = 1.68.sp
+                    letterSpacing = 1.68.sp,
+                    textAlign = TextAlign.Left
                 )
 
                 Text(
@@ -489,87 +491,152 @@ fun CustomerForm(
     val state by viewModel.uiState.collectAsState()
 
     if (state.showSuccessDialog) {
-        AlertDialog(
-            onDismissRequest = { viewModel.onDismissSuccessDialog() },
-            containerColor = MaterialTheme.colorScheme.background,
-            titleContentColor = MaterialTheme.colorScheme.secondary,
-            textContentColor = MaterialTheme.colorScheme.secondary,
-            title = { Text("Customer Added") },
-            text = { Text("Customer added successfully.") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        viewModel.onDismissSuccessDialog()
-                        onOrderCreated()
-                    }) {
-                    Text("OK", color = MaterialTheme.colorScheme.secondary)
+        Dialog(onDismissRequest = { viewModel.onDismissSuccessDialog() }) {
+            Box(
+                modifier = Modifier
+                    .width(304.dp)
+                    .height(252.dp)
+                    .clip(RoundedCornerShape(20.dp))
+
+                    .paint(
+                        painter = painterResource(id = R.drawable.dialog_svg),
+                        contentScale = ContentScale.FillBounds
+                    ),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.user_saved_svg),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Text(
+                        text = "Customer created",
+                        fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                        fontSize = 24.sp,
+                        lineHeight = 26.4.sp,
+                        letterSpacing = (-0.76).sp,
+                        textAlign = TextAlign.Left,
+                        color = MaterialTheme.colorScheme.onTertiary,
+                    )
+                    Spacer(modifier = Modifier.height(10.39.dp))
+
+                    Text(
+                        text = state.customerName + " added successfully.",
+                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                        fontSize = 15.sp,
+                        lineHeight = 22.5.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        textAlign = TextAlign.Left
+                    )
+
+                    Box(
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .height(44.dp)
+                                .width(120.dp)
+                                .clip(RoundedCornerShape(14.dp))
+
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.new_buttons_svg),
+                                contentDescription = null,
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier.matchParentSize()
+                            )
+                            Button(
+                                onClick = {
+                                    viewModel.onDismissSuccessDialog()
+                                    onOrderCreated()
+                                },
+                                modifier = Modifier.fillMaxSize(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Transparent,
+                                )
+                            ) {
+
+                                Text("Continue", color = MaterialTheme.colorScheme.onTertiary)
+                            }
+                        }
+                    }
                 }
-            })
+            }
+        }
     }
 
-
-    SectionHeader("Customer Details", MaterialTheme.colorScheme.onSurfaceVariant)
-    Spacer(modifier = Modifier.height(16.dp))
-    InputTextField(
-        value = state.customerName,
-        onValueChange = { viewModel.onCustomerNameChange(it) },
-        label = "Full Name",
-        error = state.customerNameError
-
-    )
-    Spacer(modifier = Modifier.height(16.dp))
-    InputTextField(
-        value = state.contact,
-        onValueChange = { viewModel.onContactChange(it) },
-        label = "Contact Number",
-        error = state.contactError
-    )
-    Spacer(modifier = Modifier.height(16.dp))
-    InputTextField(
-        value = state.email,
-        onValueChange = { viewModel.onEmailChange(it) },
-        label = "Email Address (Optional)",
-        minLines = 3,
-        error = state.emailError
-    )
-    Spacer(modifier = Modifier.height(36.dp))
-    SectionHeader("LOCATION DATA", MaterialTheme.colorScheme.onSurfaceVariant)
-    Spacer(modifier = Modifier.height(16.dp))
-    InputTextField(
-        value = state.address,
-        onValueChange = { viewModel.onAddressChange(it) },
-        label = "Delivery Address",
-        error = state.addressError
-    )
-    Spacer(modifier = Modifier.height(36.dp))
-
-    Button(
-        onClick = { viewModel.onSaveCustomer() },
-        enabled = state.isFormValid,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-        ),
-        contentPadding = PaddingValues(0.dp),
-        shape = RoundedCornerShape(12.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .blur(if (state.showSuccessDialog) 5.dp else 0.dp)
     ) {
-        Box(
-            modifier = Modifier
-                .height(56.dp)
-                .fillMaxWidth()
+        SectionHeader("Customer Details", MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(modifier = Modifier.height(16.dp))
+        InputTextField(
+            value = state.customerName,
+            onValueChange = { viewModel.onCustomerNameChange(it) },
+            label = "Full Name",
+            error = state.customerNameError
+
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        InputTextField(
+            value = state.contact,
+            onValueChange = { viewModel.onContactChange(it) },
+            label = "Contact Number",
+            error = state.contactError
+        )
+        Spacer(modifier = Modifier.height(16.dp))
+        InputTextField(
+            value = state.email,
+            onValueChange = { viewModel.onEmailChange(it) },
+            label = "Email Address (Optional)",
+            minLines = 3,
+            error = state.emailError
+        )
+        Spacer(modifier = Modifier.height(36.dp))
+        SectionHeader("LOCATION DATA", MaterialTheme.colorScheme.onSurfaceVariant)
+        Spacer(modifier = Modifier.height(16.dp))
+        InputTextField(
+            value = state.address,
+            onValueChange = { viewModel.onAddressChange(it) },
+            label = "Delivery Address",
+            error = state.addressError
+        )
+        Spacer(modifier = Modifier.height(36.dp))
+
+        Button(
+            onClick = { viewModel.onSaveCustomer() },
+            enabled = state.isFormValid,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Transparent,
+            ),
+            contentPadding = PaddingValues(0.dp),
+            shape = RoundedCornerShape(12.dp)
         ) {
-            Image(
-                painter = painterResource(R.drawable.save_button),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.matchParentSize()
-            )
-            Text(
-                text = "Save",
-                style = MaterialTheme.typography.titleMedium,
-                fontSize = 16.sp,
-                lineHeight = 24.sp,
-                modifier = Modifier.align(Alignment.Center)
-            )
+            Box(
+                modifier = Modifier
+                    .height(56.dp)
+                    .fillMaxWidth()
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.save_button),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                    modifier = Modifier.matchParentSize()
+                )
+                Text(
+                    text = "Save",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 16.sp,
+                    lineHeight = 24.sp,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
         }
     }
 

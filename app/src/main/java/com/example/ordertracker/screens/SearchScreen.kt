@@ -5,14 +5,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import com.example.ordertracker.MainScreensTopBar
 import com.example.ordertracker.OrderTrackerBottomBar
-import com.example.ordertracker.OrderTrackerTopBar
 
 @Composable
 fun SearchScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
-            OrderTrackerTopBar(
+            MainScreensTopBar(
                 title = "Search"
             )
         }, bottomBar = {

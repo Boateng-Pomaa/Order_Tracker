@@ -132,6 +132,34 @@ fun OrderTrackerTopBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun MainScreensTopBar(
+    title: String
+){
+    TopAppBar(
+        title = {
+            Column(
+                horizontalAlignment = Alignment.Start,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 16.dp)
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 24.sp,
+                    color = MaterialTheme.colorScheme.onTertiary
+                )
+            }
+        }, colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.background,
+            titleContentColor = MaterialTheme.colorScheme.secondary,
+            navigationIconContentColor = MaterialTheme.colorScheme.secondary
+        )
+    )
+}
+
 
 @Composable
 fun OrderTrackerBottomBar(

@@ -14,7 +14,7 @@ data class CreateCustomerUiState(
     val showErrorDialog: Boolean = false
 
 
-    ){
+) {
     val isFormValid: Boolean
-        get() = customerNameError == null && contactError == null && emailError == null && addressError == null
+        get() = customerNameError == null && contactError == null && emailError == null && addressError == null && customerName.isNotBlank() && contact.isNotBlank() && email.isNotBlank() && address.isNotBlank()
 }

@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 val ScreenBackground = Color(0xFF0D1B2A)
 val Status = Color(0xFFFFB830)
-val Cards = Color(0xFFFFFFFF)
+val Cards = Color(0xFFD8DFED)
 
 val Buttons = Color(0xFFFF5722)
 val Titles = Color(0xFF8A9BB5)
