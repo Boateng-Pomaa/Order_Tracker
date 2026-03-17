@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -26,6 +25,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,19 +44,20 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.example.ordertracker.BottomNavItems
 import com.example.ordertracker.OrderTrackerTopBar
 import com.example.ordertracker.R
 import com.example.ordertracker.customers.ChooseFromCustomer
 import com.example.ordertracker.customers.InputTextField
-import com.example.ordertracker.orders.AppTextField
 import com.example.ordertracker.orders.DeliverySelector
 import com.example.ordertracker.orders.SectionHeader
 import com.example.ordertracker.orders.StatusDropdown
 import com.example.ordertracker.uistate.CreateOrderUiState
 import com.example.ordertracker.viewmodels.CreateOrderViewModel
+import com.example.ordertracker.viewmodels.SharedViewModel
 
 @Composable
-fun CreateOrderScreen(navController: NavHostController) {
+fun CreateOrderScreen(navController: NavHostController, sharedViewModel: SharedViewModel) {
     Scaffold(
         topBar = {
             OrderTrackerTopBar(
@@ -65,7 +67,10 @@ fun CreateOrderScreen(navController: NavHostController) {
         }) { innerPadding ->
         CreateOrder(
             modifier = Modifier.padding(innerPadding),
-            onOrderCreated = { navController.popBackStack() })
+            navController = navController,
+            onOrderCreated = { navController.popBackStack() },
+            sharedViewModel = sharedViewModel
+        )
     }
 }
 
@@ -74,10 +79,27 @@ fun CreateOrderScreen(navController: NavHostController) {
 fun CreateOrder(
     modifier: Modifier = Modifier,
     onOrderCreated: () -> Unit,
-    viewModel: CreateOrderViewModel = hiltViewModel()
+    navController: NavHostController,
+    viewModel: CreateOrderViewModel = hiltViewModel(),
+    sharedViewModel: SharedViewModel
 ) {
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+    val selectedCustomer = sharedViewModel.selectedCustomer.value
+
+    DisposableEffect(Unit) {
+        onDispose {
+            viewModel.clearForm()
+            sharedViewModel.clearSelectedCustomer()
+        }
+    }
+
+    LaunchedEffect(selectedCustomer) {
+        selectedCustomer?.let {
+            viewModel.onCustomerNameChange(0, it.customerName)
+            viewModel.onContactChange(0, it.contact)
+        }
+    }
 
     if (state.showSuccessDialog) {
         Dialog(onDismissRequest = { viewModel.onDismissSuccessDialog() }) {
@@ -141,6 +163,7 @@ fun CreateOrder(
                             Button(
                                 onClick = {
                                     viewModel.onDismissSuccessDialog()
+                                    sharedViewModel.clearSelectedCustomer()
                                     onOrderCreated()
                                 },
                                 modifier = Modifier.fillMaxSize(),
@@ -174,7 +197,7 @@ fun CreateOrder(
         ) {
             state.orders.forEachIndexed { index, orderState ->
                 OrderForm(
-                    state = orderState, index = index, viewModel = viewModel
+                    state = orderState, index = index, viewModel = viewModel, navController = navController
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -189,60 +212,6 @@ fun CreateOrder(
                 .background(MaterialTheme.colorScheme.background)
                 .padding(bottom = 16.dp)
         ) {
-//            Row(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .padding(horizontal = 16.dp),
-//                horizontalArrangement = Arrangement.spacedBy(15.dp)
-//            ) {
-//                Button(
-//                    onClick = { viewModel.addOrder() },
-//                    modifier = Modifier.weight(1f),
-//                    contentPadding = PaddingValues(2.dp),
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = Color.Transparent, contentColor = Color.Unspecified
-//                    )
-//                ) {
-//                    Box(
-//                        modifier = Modifier
-//                            .height(44.dp)
-//                            .fillMaxWidth()
-//                    ) {
-//                        Image(
-//                            painter = painterResource(R.drawable.additional_order_button),
-//                            contentDescription = null,
-//                            contentScale = ContentScale.FillBounds,
-//                            modifier = Modifier.matchParentSize()
-//                        )
-//                    }
-//                }
-//
-//                Button(
-//                    onClick = { viewModel.removeLastOrder() },
-//                    enabled = state.orders.size > 1,
-//                    modifier = Modifier.weight(1f),
-//                    contentPadding = PaddingValues(2.dp),
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = Color.Transparent, contentColor = Color.Unspecified
-//                    )
-//                ) {
-//                    Box(
-//                        modifier = Modifier
-//                            .height(44.dp)
-//                            .fillMaxWidth()
-//                    ) {
-//                        Image(
-//                            painter = painterResource(R.drawable.remove_additional_order_button),
-//                            contentDescription = null,
-//                            alpha = if (state.orders.size > 1) 1f else 0.5f,
-//                            contentScale = ContentScale.FillBounds,
-//                            modifier = Modifier.matchParentSize()
-//                        )
-//                    }
-//                }
-//            }
-//
-//            Spacer(modifier = Modifier.height(10.dp))
 
             Button(
                 onClick = { viewModel.createOrder() },
@@ -282,14 +251,26 @@ fun CreateOrder(
 
 @Composable
 fun OrderForm(
-    state: CreateOrderUiState, index: Int, viewModel: CreateOrderViewModel
+    state: CreateOrderUiState,
+    index: Int,
+    viewModel: CreateOrderViewModel,
+    navController: NavHostController
 ) {
+
     SectionHeader("CUSTOMER DETAILS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
+
+    ChooseFromCustomer {
+        navController.navigate(BottomNavItems.Customers.route)
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+
+
     InputTextField(
         value = state.customerName,
         onValueChange = { viewModel.onCustomerNameChange(index, it) },
         label = "Full Name",
-        error = state.customerNameError
+        error = state.customerNameError,
+        readOnly = true
     )
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -298,7 +279,8 @@ fun OrderForm(
         value = state.contact,
         onValueChange = { viewModel.onContactChange(index, it) },
         label = "Contact Number",
-        error = state.contactError
+        error = state.contactError,
+        readOnly = true
     )
 
     Spacer(modifier = Modifier.height(32.dp))

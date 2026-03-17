@@ -34,11 +34,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -55,11 +55,13 @@ import com.example.ordertracker.screens.CustomersScreen
 import com.example.ordertracker.screens.DashboardScreen
 import com.example.ordertracker.screens.DetailsScreen
 import com.example.ordertracker.screens.SearchScreen
+import com.example.ordertracker.viewmodels.SharedViewModel
 
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
+    val sharedViewModel: SharedViewModel = viewModel()
 
     NavHost(
         navController = navController, startDestination = BottomNavItems.Dashboard.route
@@ -70,7 +72,7 @@ fun MainScreen() {
         }
 
         composable(Routes.CREATE_ORDER) {
-            CreateOrderScreen(navController)
+            CreateOrderScreen(navController, sharedViewModel)
         }
 
         composable(
@@ -81,7 +83,7 @@ fun MainScreen() {
         }
 
         composable(BottomNavItems.Customers.route) {
-            CustomersScreen(navController)
+            CustomersScreen(navController, sharedViewModel)
         }
 
         composable(BottomNavItems.Search.route) {
@@ -102,42 +104,42 @@ fun OrderTrackerTopBar(
 ) {
     TopAppBar(
         title = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(end = if (showBackButton) 48.dp else 16.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.onTertiary
+            )
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = if (showBackButton) 48.dp else 16.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
-
-                Spacer(modifier = Modifier.height(4.dp))
-
-                Box(
-                    modifier = Modifier
-                        .width(24.dp)
-                        .height(1.dp)
-                        .background(color = MaterialTheme.colorScheme.tertiary)
+                    .width(24.dp)
+                    .height(1.dp)
+                    .background(color = MaterialTheme.colorScheme.tertiary)
+            )
+        }
+    }, navigationIcon = {
+        if (showBackButton) {
+            IconButton(onClick = onBackClick) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                    contentDescription = "Back"
                 )
             }
-        }, navigationIcon = {
-            if (showBackButton) {
-                IconButton(onClick = onBackClick) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-            }
-        }, colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = MaterialTheme.colorScheme.background,
-            titleContentColor = MaterialTheme.colorScheme.secondary,
-            navigationIconContentColor = MaterialTheme.colorScheme.secondary
-        )
+        }
+    }, colors = TopAppBarDefaults.topAppBarColors(
+        containerColor = MaterialTheme.colorScheme.background,
+        titleContentColor = MaterialTheme.colorScheme.secondary,
+        navigationIconContentColor = MaterialTheme.colorScheme.secondary
+    )
     )
 }
 

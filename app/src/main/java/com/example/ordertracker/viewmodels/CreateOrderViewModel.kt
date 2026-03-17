@@ -7,7 +7,6 @@ import com.example.ordertracker.uistate.CreateOrdersScreenState
 import com.example.ordertracker.orders.Delivery
 import com.example.ordertracker.orders.OrderModel
 import com.example.ordertracker.orders.Status
-import com.example.ordertracker.uistate.CreateOrderUiState
 import com.example.ordertracker.util.ValidationUtil
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -138,19 +137,7 @@ class CreateOrderViewModel @Inject constructor(private val orderRepository: Orde
         }
     }
 
-    fun addOrder() {
-        _uiState.update { current ->
-            current.copy(
-                orders = current.orders + CreateOrderUiState()
-            )
-        }
-    }
-
-    fun removeLastOrder() {
-        _uiState.update { current ->
-            if (current.orders.size > 1) {
-                current.copy(orders = current.orders.dropLast(1))
-            } else current
-        }
+    fun clearForm() {
+        _uiState.value = CreateOrdersScreenState()
     }
 }

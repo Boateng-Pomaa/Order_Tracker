@@ -58,6 +58,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -71,6 +72,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.ordertracker.R
 import com.example.ordertracker.orders.SectionHeader
 import com.example.ordertracker.viewmodels.CreateCustomerViewModel
+import com.example.ordertracker.viewmodels.SharedViewModel
 
 
 @Composable
@@ -264,17 +266,17 @@ fun CustomerItem(customerModel: CustomerModel, onCustomerClick: (Long) -> Unit) 
 }
 
 @Composable
-fun ChooseFromCustomer(onCustomerSelected: (id: Number, name: String, phone: String) -> Unit) {
+fun ChooseFromCustomer(onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .clip(RoundedCornerShape(100))
+            .clip(RoundedCornerShape(12.dp))
             .clickable {
-
+                onClick()
             }) {
         Image(
-            painter = painterResource(id = R.drawable.background_border),
+            painter = painterResource(id = R.drawable.text_fields_background),
             contentDescription = null,
             contentScale = ContentScale.FillBounds,
             modifier = Modifier.matchParentSize()
@@ -285,38 +287,46 @@ fun ChooseFromCustomer(onCustomerSelected: (id: Number, name: String, phone: Str
                 .padding(start = 14.dp, end = 10.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+//            horizontalArrangement = Arrangement.SpaceBetween
 
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.customer),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f) // pushes arrow to the end
+            ) {
 
-            Column {
-                Text(
-                    "SELECT CUSTOMER",
-                    fontSize = 12.sp,
-                    fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    letterSpacing = 1.68.sp,
-                    textAlign = TextAlign.Left
+                Image(
+                    painter = painterResource(id = R.drawable.customer),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
                 )
+                Spacer(modifier = Modifier.width(12.dp))
 
-                Text(
-                    "Choose from customers",
-                    fontSize = 11.sp,
-                    fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
-                    color = MaterialTheme.colorScheme.secondary
-                )
+                Column(horizontalAlignment = Alignment.Start) {
+                    Text(
+                        "SELECT CUSTOMER",
+                        fontSize = 11.sp,
+                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 1.32.sp,
+                        textAlign = TextAlign.Left
+                    )
+
+                    Text(
+                        "Choose from customers",
+                        fontSize = 15.sp,
+                        fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
+                        color = MaterialTheme.colorScheme.secondary,
+                        textAlign = TextAlign.Left
+                    )
+                }
             }
-            Box(modifier = Modifier.wrapContentSize()) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "right arrow",
-                    tint = MaterialTheme.colorScheme.secondary
-                )
+                Box(modifier = Modifier.wrapContentSize()) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = "right arrow",
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
             }
         }
     }
@@ -464,7 +474,8 @@ fun InputTextField(
     label: String,
     error: String? = null,
     minLines: Int = 1,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    readOnly: Boolean = false
 ) {
 
     var isFocused by remember { mutableStateOf(false) }
@@ -731,8 +742,9 @@ fun TextField(text: String) {
 fun CustomerHome(
     onSearchClick: () -> Unit,
     customers: List<CustomerModel>,
-    onCustomerClick: (Long) -> Unit,
-    onNewCustomerClick: () -> Unit
+    onNewCustomerClick: () -> Unit,
+    sharedViewModel: SharedViewModel = hiltViewModel(),
+    onCustomerSelected: () -> Unit = {}
 ) {
     val listState = rememberLazyListState()
 
@@ -776,8 +788,11 @@ fun CustomerHome(
         ) {
             items(customers, key = { it.id }) { customer ->
                 CustomerItem(
-                    customerModel = customer, onCustomerClick = onCustomerClick
-                )
+                    customerModel = customer,
+                    onCustomerClick = { 
+                        sharedViewModel.selectedCustomer(customer) 
+                        onCustomerSelected()
+                    })
             }
         }
     }

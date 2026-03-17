@@ -21,9 +21,10 @@ import com.example.ordertracker.customers.CustomerHome
 import com.example.ordertracker.navigation.Routes
 import com.example.ordertracker.uistate.CustomersUiState
 import com.example.ordertracker.viewmodels.CustomersViewModel
+import com.example.ordertracker.viewmodels.SharedViewModel
 
 @Composable
-fun CustomersScreen(navController: NavHostController) {
+fun CustomersScreen(navController: NavHostController, sharedViewModel: SharedViewModel) {
     Scaffold(topBar = {
         MainScreensTopBar(
             title = "Customers"
@@ -34,6 +35,10 @@ fun CustomersScreen(navController: NavHostController) {
 
         Customer(
             modifier = Modifier.padding(innerPadding),
+            sharedViewModel = sharedViewModel,
+            onCustomerClick = {
+                navController.popBackStack()
+            },
             onSearchClick = {
                 navController.navigate(BottomNavItems.Search.route) {
                     popUpTo(navController.graph.findStartDestination().id) {
@@ -53,7 +58,8 @@ fun CustomersScreen(navController: NavHostController) {
 fun Customer(
     modifier: Modifier = Modifier,
     viewModel: CustomersViewModel = hiltViewModel(),
-    onCustomerClick: (Long) -> Unit = {},
+    sharedViewModel: SharedViewModel,
+    onCustomerClick: () -> Unit,
     onSearchClick: () -> Unit,
     onNewCustomerClick: () -> Unit
 ) {
@@ -69,8 +75,11 @@ fun Customer(
                 CustomerHome(
                     onSearchClick = { onSearchClick() },
                     customers = (uiState as CustomersUiState.Success).customers,
-                    onCustomerClick = onCustomerClick,
-                    onNewCustomerClick = onNewCustomerClick
+                    onNewCustomerClick = onNewCustomerClick,
+                    sharedViewModel = sharedViewModel,
+                    onCustomerSelected = {
+                        onCustomerClick()
+                    }
                 )
             }
 
@@ -85,8 +94,8 @@ fun Customer(
                 CustomerHome(
                     customers = emptyList(),
                     onSearchClick = onSearchClick,
-                    onCustomerClick = onCustomerClick,
-                    onNewCustomerClick = onNewCustomerClick
+                    onNewCustomerClick = onNewCustomerClick,
+                    sharedViewModel = sharedViewModel
                 )
             }
         }
