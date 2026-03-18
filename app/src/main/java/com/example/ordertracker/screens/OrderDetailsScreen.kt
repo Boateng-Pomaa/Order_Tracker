@@ -70,12 +70,12 @@ fun OrderDetailsScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        // Scrollable content area: imePadding shrinks this area to avoid keyboard
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding()
                 .verticalScroll(scrollState)
+                .padding(horizontal = 20.dp),
         ) {
             OrderFormContent(state = state, onCustomerNameChange = {
                 viewModel.updateCustomerName(it)
@@ -97,7 +97,6 @@ fun OrderDetailsScreen(
             Spacer(modifier = Modifier.height(100.dp))
         }
 
-        // Action buttons fixed at the bottom of the screen
         Row(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

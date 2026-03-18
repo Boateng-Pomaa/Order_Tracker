@@ -321,12 +321,12 @@ fun ChooseFromCustomer(onClick: () -> Unit) {
                     )
                 }
             }
-                Box(modifier = Modifier.wrapContentSize()) {
-                    Icon(
-                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                        contentDescription = "right arrow",
-                        tint = MaterialTheme.colorScheme.secondary
-                    )
+            Box(modifier = Modifier.wrapContentSize()) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "right arrow",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
             }
         }
     }
@@ -475,7 +475,8 @@ fun InputTextField(
     error: String? = null,
     minLines: Int = 1,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    readOnly: Boolean = false
+    readOnly: Boolean = false,
+    enabled: Boolean = true
 ) {
 
     var isFocused by remember { mutableStateOf(false) }
@@ -524,6 +525,8 @@ fun InputTextField(
                     value = value,
                     onValueChange = onValueChange,
                     shape = RoundedCornerShape(12.dp),
+                    readOnly = readOnly,
+                    enabled = enabled,
 
                     placeholder = {
                         if (!isFocused && value.isEmpty()) {
@@ -788,9 +791,8 @@ fun CustomerHome(
         ) {
             items(customers, key = { it.id }) { customer ->
                 CustomerItem(
-                    customerModel = customer,
-                    onCustomerClick = { 
-                        sharedViewModel.selectedCustomer(customer) 
+                    customerModel = customer, onCustomerClick = {
+                        sharedViewModel.selectedCustomer(customer)
                         onCustomerSelected()
                     })
             }

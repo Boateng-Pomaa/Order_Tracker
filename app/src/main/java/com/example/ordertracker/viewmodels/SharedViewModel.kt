@@ -18,10 +18,4 @@ class SharedViewModel @Inject constructor() : ViewModel() {
         selectedCustomer.value = null
     }
 
-    fun getSelectedCustomer(): CustomerModel? {
-        return selectedCustomer.value
-
-
-    }
-
 }

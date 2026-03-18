@@ -197,7 +197,10 @@ fun CreateOrder(
         ) {
             state.orders.forEachIndexed { index, orderState ->
                 OrderForm(
-                    state = orderState, index = index, viewModel = viewModel, navController = navController
+                    state = orderState,
+                    index = index,
+                    viewModel = viewModel,
+                    navController = navController
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -270,7 +273,8 @@ fun OrderForm(
         onValueChange = { viewModel.onCustomerNameChange(index, it) },
         label = "Full Name",
         error = state.customerNameError,
-        readOnly = true
+        readOnly = true,
+        enabled = false
     )
 
     Spacer(modifier = Modifier.height(16.dp))
@@ -280,7 +284,8 @@ fun OrderForm(
         onValueChange = { viewModel.onContactChange(index, it) },
         label = "Contact Number",
         error = state.contactError,
-        readOnly = true
+        readOnly = true,
+        enabled = false
     )
 
     Spacer(modifier = Modifier.height(32.dp))

@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ordertracker.R
+import com.example.ordertracker.customers.InputTextField
 import com.example.ordertracker.uistate.OrderDetailsUiState
 import com.example.ordertracker.uistate.OrderUiState
 import kotlinx.coroutines.delay
@@ -649,44 +650,42 @@ fun OrderFormContent(
 
     SectionHeader("CUSTOMER DETAILS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
-    AppTextField(
+    InputTextField(
         value = state.customerName,
         onValueChange = onCustomerNameChange,
         label = "Full Name",
         modifier = Modifier.padding(vertical = 8.dp),
         enabled = state.isEditing,
-        singleLine = true,
         error = state.customerNameError
     )
 
-    AppTextField(
+
+    InputTextField(
         value = state.contact,
         onValueChange = onContactChange,
         label = "Contact Number",
         modifier = Modifier.padding(vertical = 8.dp),
         enabled = state.isEditing,
-        singleLine = true,
         error = state.contactError
     )
 
+
     SectionHeader("ORDER DETAILS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
-    AppTextField(
+    InputTextField(
         value = state.item,
         onValueChange = onItemChange,
         modifier = Modifier.padding(vertical = 8.dp),
         label = "Item Description",
         enabled = state.isEditing,
-        singleLine = false,
         error = state.itemError
     )
-
     Row(
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        AppTextField(
+        InputTextField(
             value = state.price,
             onValueChange = onPriceChange,
             label = "Price (Ghc)",
@@ -697,11 +696,10 @@ fun OrderFormContent(
                 keyboardType = KeyboardType.Decimal
             ),
             enabled = state.isEditing,
-            singleLine = true,
             error = state.priceError
         )
 
-        AppTextField(
+        InputTextField(
             value = state.units,
             onValueChange = onUnitsChange,
             label = "Units",
@@ -712,10 +710,10 @@ fun OrderFormContent(
                 keyboardType = KeyboardType.Number
             ),
             enabled = state.isEditing,
-            singleLine = true,
             error = state.unitsError
         )
     }
+
 
     SectionHeader("DELIVERY OPTIONS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
@@ -728,4 +726,5 @@ fun OrderFormContent(
     StatusDropdown(
         selected = state.status, onSelected = onStatusChange, enabled = state.isEditing
     )
+
 }
