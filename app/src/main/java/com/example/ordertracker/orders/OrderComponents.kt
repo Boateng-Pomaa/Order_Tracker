@@ -96,24 +96,6 @@ fun OrderItems(
             border = BorderStroke(0.dp, Color.Transparent)
 
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(IntrinsicSize.Min)
-                    .clip(RoundedCornerShape(16.dp))
-            ) {
-                val accentColor = when (order.status) {
-                    Status.PENDING -> MaterialTheme.colorScheme.tertiary
-                    Status.DELIVERED -> MaterialTheme.colorScheme.onSurfaceVariant
-                    Status.PICKED -> MaterialTheme.colorScheme.onSurfaceVariant
-                }
-
-                Box(
-                    modifier = Modifier
-                        .width(2.dp)
-                        .background(accentColor)
-                        .fillMaxHeight()
-                )
                 Column(
                     modifier = Modifier.padding(
                         start = 12.dp, end = 12.dp, bottom = 12.dp, top = 11.dp
@@ -273,7 +255,6 @@ fun OrderItems(
             }
         }
     }
-}
 
 
 @Composable

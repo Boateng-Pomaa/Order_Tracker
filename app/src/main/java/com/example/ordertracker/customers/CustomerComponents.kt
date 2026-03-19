@@ -46,6 +46,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -57,8 +58,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -76,16 +78,30 @@ import com.example.ordertracker.viewmodels.SharedViewModel
 
 
 @Composable
-fun SearchBar(onClick: () -> Unit) {
+fun SearchBar(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = false,
+    value: String = "",
+    onValueChange: (String) -> Unit = {},
+    onClick: () -> Unit = {}
+) {
+    val focusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(enabled) {
+        if (enabled) {
+            focusRequester.requestFocus()
+        }
+    }
+
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .clip(RoundedCornerShape(14.dp))
             .border(
                 1.dp, MaterialTheme.colorScheme.secondary.copy(0.12f), RoundedCornerShape(14.dp)
             )
-            .clickable { onClick() }) {
+            .clickable(enabled = !enabled) { onClick() }) {
         Image(
             painter = painterResource(id = R.drawable.text_fields_background),
             contentDescription = null,
@@ -93,9 +109,9 @@ fun SearchBar(onClick: () -> Unit) {
             modifier = Modifier.matchParentSize()
         )
         OutlinedTextField(
-            enabled = false,
-            value = "",
-            onValueChange = {},
+            enabled = enabled,
+            value = value,
+            onValueChange = onValueChange,
             maxLines = 1,
             placeholder = {
                 Text(
@@ -116,6 +132,16 @@ fun SearchBar(onClick: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
+                .focusRequester(focusRequester),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Color.Transparent,
+                unfocusedBorderColor = Color.Transparent,
+                disabledBorderColor = Color.Transparent,
+                errorBorderColor = Color.Transparent,
+                cursorColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                focusedTextColor = MaterialTheme.colorScheme.onTertiary,
+
+                )
         )
     }
 }
@@ -536,7 +562,9 @@ fun InputTextField(
 
                     minLines = minLines,
                     textStyle = LocalTextStyle.current.copy(
-                        color = MaterialTheme.colorScheme.onTertiary
+                        color = if (enabled) MaterialTheme.colorScheme.onTertiary else MaterialTheme.colorScheme.onTertiary.copy(
+                            alpha = 0.38f
+                        )
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
@@ -546,6 +574,9 @@ fun InputTextField(
                         unfocusedBorderColor = Color.Transparent,
                         cursorColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         unfocusedPlaceholderColor = MaterialTheme.colorScheme.secondary,
+                        disabledTextColor = MaterialTheme.colorScheme.onTertiary.copy(alpha = 0.38f),
+                        disabledBorderColor = Color.Transparent,
+                        disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.38f),
                     )
                 )
             }

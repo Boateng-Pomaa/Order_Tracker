@@ -86,8 +86,15 @@ fun MainScreen() {
             CustomersScreen(navController, sharedViewModel)
         }
 
-        composable(BottomNavItems.Search.route) {
-            SearchScreen(navController)
+        composable(
+            route = BottomNavItems.Search.route + "?isSelection={isSelection}",
+            arguments = listOf(navArgument("isSelection") {
+                type = NavType.BoolType
+                defaultValue = false
+            })
+        ) { backStackEntry ->
+            val isSelection = backStackEntry.arguments?.getBoolean("isSelection") ?: false
+            SearchScreen(navController, sharedViewModel, isSelection)
         }
 
         composable(Routes.NEW_CUSTOMER) {

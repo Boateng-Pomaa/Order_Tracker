@@ -85,7 +85,7 @@ fun CreateOrder(
 ) {
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
-    val selectedCustomer = sharedViewModel.selectedCustomer.value
+    val selectedCustomer by sharedViewModel.selectedCustomer
 
     DisposableEffect(Unit) {
         onDispose {
@@ -200,7 +200,7 @@ fun CreateOrder(
                     state = orderState,
                     index = index,
                     viewModel = viewModel,
-                    navController = navController
+                    navController = navController,
                 )
                 Spacer(modifier = Modifier.height(24.dp))
             }
@@ -257,13 +257,13 @@ fun OrderForm(
     state: CreateOrderUiState,
     index: Int,
     viewModel: CreateOrderViewModel,
-    navController: NavHostController
+    navController: NavHostController,
 ) {
 
     SectionHeader("CUSTOMER DETAILS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
     ChooseFromCustomer {
-        navController.navigate(BottomNavItems.Customers.route)
+        navController.navigate(BottomNavItems.Search.route + "?isSelection=true")
     }
     Spacer(modifier = Modifier.height(16.dp))
 
