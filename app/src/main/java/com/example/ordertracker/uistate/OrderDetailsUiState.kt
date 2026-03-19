@@ -26,6 +26,7 @@ data class OrderDetailsUiState(
     val itemError: String? = null,
     val priceError: String? = null,
     val unitsError: String? = null,
+    val showSuccessDialog: Boolean = false,
 
     val isFormValid: Boolean = false
 )

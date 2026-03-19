@@ -120,7 +120,7 @@ fun CreateOrder(
                         .padding(24.dp),
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.user_saved_svg),
+                        painter = painterResource(id = R.drawable.order_created_svg),
                         contentDescription = null
                     )
                     Spacer(modifier = Modifier.height(15.dp))

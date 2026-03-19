@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -27,11 +28,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.ordertracker.OrderTrackerTopBar
@@ -65,10 +71,90 @@ fun OrderDetailsScreen(
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
 
+
+    if (state.showSuccessDialog) {
+        Dialog(onDismissRequest = { viewModel.onDismissSuccessDialog() }) {
+            Box(
+                modifier = Modifier
+                    .width(304.dp)
+                    .height(252.dp)
+                    .clip(RoundedCornerShape(20.dp))
+
+                    .paint(
+                        painter = painterResource(id = R.drawable.dialog_svg),
+                        contentScale = ContentScale.FillBounds
+                    ),
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(24.dp),
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.order_saved_svg),
+                        contentDescription = null
+                    )
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Text(
+                        text = "Order updated",
+                        fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                        fontSize = 24.sp,
+                        lineHeight = 26.4.sp,
+                        letterSpacing = (-0.76).sp,
+                        textAlign = TextAlign.Left,
+                        color = MaterialTheme.colorScheme.onTertiary,
+                    )
+                    Spacer(modifier = Modifier.height(10.39.dp))
+
+                    Text(
+                        text = "The order was updated successfully.",
+                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                        fontSize = 15.sp,
+                        lineHeight = 22.5.sp,
+                        color = MaterialTheme.colorScheme.secondary,
+                        textAlign = TextAlign.Left
+                    )
+
+                    Box(
+                        modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .height(44.dp)
+                                .width(120.dp)
+                                .clip(RoundedCornerShape(14.dp))
+
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.new_buttons_svg),
+                                contentDescription = null,
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier.matchParentSize()
+                            )
+                            Button(
+                                onClick = {
+                                    viewModel.onDismissSuccessDialog()
+                                },
+                                modifier = Modifier.fillMaxSize(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.Transparent,
+                                )
+                            ) {
+
+                                Text("Continue", color = MaterialTheme.colorScheme.onTertiary)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     Box(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .blur(if (state.showSuccessDialog) 5.dp else 0.dp)
     ) {
         Column(
             modifier = Modifier
@@ -148,8 +234,9 @@ fun OrderDetailsScreen(
                     enabled = isButtonEnabled, onClick = {
                         if (state.isEditing) {
                             viewModel.saveOrder()
+                        } else {
+                            viewModel.toggleEditing()
                         }
-                        viewModel.toggleEditing()
                     }, colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent

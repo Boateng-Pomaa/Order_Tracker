@@ -152,14 +152,24 @@ class OrderDetailsViewModel @Inject constructor(
         viewModelScope.launch {
             val currentState = _uiState.value
             if (currentState.hasChange && currentState.isFormValid) {
-                currentState.order?.let {
-                    orderRepository.updateOrder(it)
-                    originalOrder = it
+                currentState.order?.let { orderToUpdate ->
+                    orderRepository.updateOrder(orderToUpdate)
+                    originalOrder = orderToUpdate
                     _uiState.update { state ->
-                        state.copy(hasChange = false, isEditing = false)
+                        state.copy(
+                            hasChange = false,
+                            isEditing = false,
+                            showSuccessDialog = true
+                        )
                     }
                 }
             }
+        }
+    }
+
+    fun onDismissSuccessDialog() {
+        _uiState.update {
+            it.copy(showSuccessDialog = false)
         }
     }
 }
