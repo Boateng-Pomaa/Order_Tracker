@@ -262,9 +262,9 @@ fun OrderForm(
 
     SectionHeader("CUSTOMER DETAILS", accentColor = MaterialTheme.colorScheme.onSurfaceVariant)
 
-    ChooseFromCustomer {
+    ChooseFromCustomer( {
         navController.navigate(BottomNavItems.Search.route + "?isSelection=true")
-    }
+    }, enabled = true)
     Spacer(modifier = Modifier.height(16.dp))
 
 

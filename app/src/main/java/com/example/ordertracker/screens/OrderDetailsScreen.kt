@@ -1,7 +1,6 @@
 package com.example.ordertracker.screens
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,16 +38,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.foundation.Image
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.ordertracker.OrderTrackerTopBar
 import com.example.ordertracker.R
 import com.example.ordertracker.orders.OrderFormContent
 import com.example.ordertracker.viewmodels.OrderDetailsViewModel
+import com.example.ordertracker.viewmodels.SharedViewModel
 
 
 @Composable
-fun DetailsScreen(navController: NavHostController) {
+fun DetailsScreen(navController: NavHostController, sharedViewModel: SharedViewModel) {
     Scaffold(
         topBar = {
             OrderTrackerTopBar(
@@ -57,7 +59,10 @@ fun DetailsScreen(navController: NavHostController) {
         }) { innerPadding ->
         OrderDetailsScreen(
             modifier = Modifier.padding(innerPadding),
-            onBackClick = { navController.popBackStack() })
+            onBackClick = { navController.popBackStack() },
+            navController = navController,
+            sharedViewModel = sharedViewModel
+        )
     }
 }
 
@@ -66,10 +71,20 @@ fun DetailsScreen(navController: NavHostController) {
 fun OrderDetailsScreen(
     modifier: Modifier = Modifier,
     viewModel: OrderDetailsViewModel = hiltViewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    navController: NavHostController,
+    sharedViewModel: SharedViewModel
 ) {
     val state by viewModel.uiState.collectAsState()
     val scrollState = rememberScrollState()
+    val selectedCustomer by sharedViewModel.selectedCustomer
+
+    LaunchedEffect(selectedCustomer) {
+        selectedCustomer?.let {
+            viewModel.updateCustomerName(it.customerName)
+            viewModel.updateContact(it.contact)
+        }
+    }
 
 
     if (state.showSuccessDialog) {
@@ -177,9 +192,8 @@ fun OrderDetailsScreen(
                 viewModel.updateDelivery(it)
             }, onStatusChange = {
                 viewModel.updateStatus(it)
-            })
+            }, navController = navController)
 
-            // Spacer to allow scrolling past the fixed buttons
             Spacer(modifier = Modifier.height(100.dp))
         }
 

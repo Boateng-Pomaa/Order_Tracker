@@ -79,7 +79,7 @@ fun MainScreen() {
             route = Routes.ORDER_DETAILS,
             arguments = listOf(navArgument("orderId") { type = NavType.LongType })
         ) {
-            DetailsScreen(navController)
+            DetailsScreen(navController, sharedViewModel)
         }
 
         composable(BottomNavItems.Customers.route) {
@@ -157,19 +157,13 @@ fun MainScreensTopBar(
 ) {
     TopAppBar(
         title = {
-            Column(
-                horizontalAlignment = Alignment.Start,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 16.dp)
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontSize = 24.sp,
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
-            }
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 24.sp,
+                color = MaterialTheme.colorScheme.onTertiary,
+                modifier = Modifier.padding(start = 4.dp)
+            )
         }, colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.background,
             titleContentColor = MaterialTheme.colorScheme.secondary,
@@ -197,7 +191,7 @@ fun OrderTrackerBottomBar(
         ) {
             items.forEach { item ->
                 val isSelected =
-                    currentDestination?.hierarchy?.any { it.route == item.route } == true
+                    currentDestination?.hierarchy?.any { it.route?.substringBefore('?') == item.route } == true
                 val color =
                     if (isSelected) MaterialTheme.colorScheme.onSurfaceVariant else Color.Gray
 

@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -292,13 +293,13 @@ fun CustomerItem(customerModel: CustomerModel, onCustomerClick: (Long) -> Unit) 
 }
 
 @Composable
-fun ChooseFromCustomer(onClick: () -> Unit) {
+fun ChooseFromCustomer(onClick: () -> Unit, enabled: Boolean = true) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .clip(RoundedCornerShape(12.dp))
-            .clickable {
+            .clickable {if (enabled)
                 onClick()
             }) {
         Image(
@@ -313,7 +314,6 @@ fun ChooseFromCustomer(onClick: () -> Unit) {
                 .padding(start = 14.dp, end = 10.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.SpaceBetween
 
         ) {
             Row(
@@ -454,16 +454,18 @@ fun ChooseFromContact(
                 .padding(start = 14.dp, end = 10.dp)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
 
         ) {
             Image(
                 painter = painterResource(id = R.drawable.contact_svg),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
+                modifier = Modifier.size(40.dp)
             )
+            Spacer(modifier = Modifier.width(30.dp))
 
-            Column {
+            Column(modifier = Modifier.weight(1f)) {
+
                 Text(
                     "CHOOSE FROM CONTACTS",
                     fontSize = 12.sp,
@@ -477,9 +479,11 @@ fun ChooseFromContact(
                     "Pull details from your phonebook",
                     fontSize = 11.sp,
                     fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = MaterialTheme.colorScheme.secondary,
+                    letterSpacing = 0.sp
                 )
             }
+            Spacer(modifier = Modifier.width(30.dp))
             Box(modifier = Modifier.wrapContentSize()) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
@@ -792,8 +796,7 @@ fun CustomerHome(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp)
-            .padding(top = 16.dp),
+            .padding(horizontal = 20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         AnimatedVisibility(visible = !isCollapsed) {
