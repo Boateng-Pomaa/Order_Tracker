@@ -1,13 +1,10 @@
 package com.example.ordertracker.di
 
-import com.example.ordertracker.data.remote.CustomerApi
-import com.example.ordertracker.data.remote.CustomerList
-import com.example.ordertracker.data.remote.OrderApi
-import com.example.ordertracker.data.remote.OrdersList
 import com.example.ordertracker.data.repository.CustomerRepository
 import com.example.ordertracker.data.repository.CustomerRepositoryImpl
 import com.example.ordertracker.data.repository.OrderRepository
 import com.example.ordertracker.data.repository.OrderRepositoryImpl
+import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -17,31 +14,26 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object OrderModule {
+
     @Provides
     @Singleton
-    fun provideOrderApi(): OrderApi {
-        return OrdersList()
+    fun provideFirebaseFirestore(): FirebaseFirestore {
+        return FirebaseFirestore.getInstance()
     }
 
     @Provides
     @Singleton
     fun provideOrderRepository(
-        api: OrderApi
+        impl: OrderRepositoryImpl
     ): OrderRepository {
-        return OrderRepositoryImpl(api)
-    }
-
-    @Provides
-    @Singleton
-    fun provideCustomerApi(): CustomerApi {
-        return CustomerList()
+        return impl
     }
 
     @Provides
     @Singleton
     fun provideCustomerRepository(
-        api: CustomerApi
+        impl: CustomerRepositoryImpl
     ): CustomerRepository {
-        return CustomerRepositoryImpl(api)
+        return impl
     }
 }

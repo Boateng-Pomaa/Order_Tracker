@@ -35,11 +35,14 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -47,7 +50,6 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -59,50 +61,72 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.paint
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.ordertracker.R
-import com.example.ordertracker.orders.SectionHeader
+import com.example.ordertracker.uistate.CustomerUiModel
 import com.example.ordertracker.viewmodels.CreateCustomerViewModel
 import com.example.ordertracker.viewmodels.SharedViewModel
 
+@Composable
+fun SearchBar(modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable { onClick() }) {
+        Image(
+            painter = painterResource(id = R.drawable.text_fields_background),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize()
+        )
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.secondary
+            )
+            Spacer(modifier = Modifier.width(12.dp))
+            Text(
+                text = "Search customer here...",
+                color = MaterialTheme.colorScheme.secondary,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
 
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
-    enabled: Boolean = false,
-    value: String = "",
-    onValueChange: (String) -> Unit = {},
-    onClick: () -> Unit = {}
+    enabled: Boolean = true,
+    value: String,
+    onValueChange: (String) -> Unit
 ) {
-    val focusRequester = remember { FocusRequester() }
-
-    LaunchedEffect(enabled) {
-        if (enabled) {
-            focusRequester.requestFocus()
-        }
-    }
-
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(14.dp))
-            .border(
-                1.dp, MaterialTheme.colorScheme.secondary.copy(0.12f), RoundedCornerShape(14.dp)
-            )
-            .clickable(enabled = !enabled) { onClick() }) {
+            .height(52.dp)
+            .clip(RoundedCornerShape(12.dp))
+    ) {
         Image(
             painter = painterResource(id = R.drawable.text_fields_background),
             contentDescription = null,
@@ -110,39 +134,32 @@ fun SearchBar(
             modifier = Modifier.matchParentSize()
         )
         OutlinedTextField(
-            enabled = enabled,
             value = value,
             onValueChange = onValueChange,
-            maxLines = 1,
+            enabled = enabled,
+            modifier = Modifier.fillMaxSize(),
             placeholder = {
                 Text(
-                    "Search by name, phone, or email...",
-                    fontSize = 15.sp,
+                    text = "Search customer here...",
                     color = MaterialTheme.colorScheme.secondary,
-                    fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
-                    textAlign = TextAlign.Center
+                    fontSize = 14.sp
                 )
             },
             leadingIcon = {
                 Icon(
                     imageVector = Icons.Default.Search,
-                    contentDescription = "Search",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.secondary
                 )
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(52.dp)
-                .focusRequester(focusRequester),
             colors = OutlinedTextFieldDefaults.colors(
                 focusedBorderColor = Color.Transparent,
                 unfocusedBorderColor = Color.Transparent,
                 disabledBorderColor = Color.Transparent,
-                errorBorderColor = Color.Transparent,
                 cursorColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 focusedTextColor = MaterialTheme.colorScheme.onTertiary,
-
-                )
+            ),
+            singleLine = true
         )
     }
 }
@@ -159,9 +176,10 @@ fun NewCustomer(onClick: () -> Unit) {
             modifier = Modifier
                 .height(52.dp)
                 .fillMaxWidth()
+                .clip(RoundedCornerShape(14.dp))
         ) {
             Image(
-                painter = painterResource(R.drawable.save_button),
+                painter = painterResource(R.drawable.text_fields_background),
                 contentDescription = null,
                 contentScale = ContentScale.FillBounds,
                 modifier = Modifier.matchParentSize()
@@ -186,9 +204,19 @@ fun NewCustomer(onClick: () -> Unit) {
     }
 }
 
+@Composable
+fun SectionHeader(title: String, color: Color = MaterialTheme.colorScheme.onSurface) {
+    Text(
+        text = title.uppercase(),
+        style = MaterialTheme.typography.labelLarge,
+        color = color,
+        fontWeight = FontWeight.Bold,
+        letterSpacing = 1.sp
+    )
+}
 
 @Composable
-fun CustomerItem(customerModel: CustomerModel, onCustomerClick: (Long) -> Unit) {
+fun CustomerItem(customerModel: CustomerUiModel, onCustomerClick: (Long) -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -223,14 +251,14 @@ fun CustomerItem(customerModel: CustomerModel, onCustomerClick: (Long) -> Unit) 
                     modifier = Modifier
                         .padding(16.dp)
                         .fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text(
-                            customerModel.customerName,
+                            text = customerModel.name,
                             color = MaterialTheme.colorScheme.onTertiary,
                             fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
                             fontSize = 17.sp
@@ -292,209 +320,6 @@ fun CustomerItem(customerModel: CustomerModel, onCustomerClick: (Long) -> Unit) 
     }
 }
 
-@Composable
-fun ChooseFromCustomer(onClick: () -> Unit, enabled: Boolean = true) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(12.dp))
-            .clickable {if (enabled)
-                onClick()
-            }) {
-        Image(
-            painter = painterResource(id = R.drawable.text_fields_background),
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier.matchParentSize()
-        )
-        Row(
-            modifier = Modifier
-                .padding(vertical = 10.dp)
-                .padding(start = 14.dp, end = 10.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.weight(1f) // pushes arrow to the end
-            ) {
-
-                Image(
-                    painter = painterResource(id = R.drawable.customer),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillBounds,
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Column(horizontalAlignment = Alignment.Start) {
-                    Text(
-                        "SELECT CUSTOMER",
-                        fontSize = 11.sp,
-                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        letterSpacing = 1.32.sp,
-                        textAlign = TextAlign.Left
-                    )
-
-                    Text(
-                        "Choose from customers",
-                        fontSize = 15.sp,
-                        fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
-                        color = MaterialTheme.colorScheme.secondary,
-                        textAlign = TextAlign.Left
-                    )
-                }
-            }
-            Box(modifier = Modifier.wrapContentSize()) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "right arrow",
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-            }
-        }
-    }
-}
-
-
-@Composable
-fun ChooseFromContact(
-    onContactSelected: (name: String, phone: String) -> Unit
-) {
-
-    val context = LocalContext.current
-
-    val contactPicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickContact()
-    ) { uri ->
-
-        uri?.let {
-            val resolver = context.contentResolver
-
-            val cursor = resolver.query(
-                it, null, null, null, null
-            )
-
-            cursor?.use { c ->
-
-                if (c.moveToFirst()) {
-
-                    val nameIndex = c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
-
-                    val idIndex = c.getColumnIndex(ContactsContract.Contacts._ID)
-
-                    val name = if (nameIndex != -1) c.getString(nameIndex) else ""
-                    val contactId = if (idIndex != -1) c.getString(idIndex) else ""
-
-                    if (contactId.isNotEmpty()) {
-                        val phoneCursor = resolver.query(
-                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-                            null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?",
-                            arrayOf(contactId),
-                            null
-                        )
-
-                        phoneCursor?.use { p ->
-
-                            if (p.moveToFirst()) {
-
-                                val phoneIndex = p.getColumnIndex(
-                                    ContactsContract.CommonDataKinds.Phone.NUMBER
-                                )
-
-                                val phone = if (phoneIndex != -1) p.getString(phoneIndex) else ""
-
-                                onContactSelected(name, phone)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted ->
-        if (isGranted) {
-            contactPicker.launch(null)
-        }
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .clip(RoundedCornerShape(100))
-            .clickable {
-                when (PackageManager.PERMISSION_GRANTED) {
-                    ContextCompat.checkSelfPermission(
-                        context, Manifest.permission.READ_CONTACTS
-                    ) -> {
-                        contactPicker.launch(null)
-                    }
-
-                    else -> {
-                        permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
-                    }
-                }
-            }) {
-        Image(
-            painter = painterResource(id = R.drawable.background_border),
-            contentDescription = null,
-            contentScale = ContentScale.FillBounds,
-            modifier = Modifier.matchParentSize()
-        )
-        Row(
-            modifier = Modifier
-                .padding(vertical = 10.dp)
-                .padding(start = 14.dp, end = 10.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.contact_svg),
-                contentDescription = null,
-                contentScale = ContentScale.FillBounds,
-                modifier = Modifier.size(40.dp)
-            )
-            Spacer(modifier = Modifier.width(30.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-
-                Text(
-                    "CHOOSE FROM CONTACTS",
-                    fontSize = 12.sp,
-                    fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    letterSpacing = 1.68.sp,
-                    textAlign = TextAlign.Left
-                )
-
-                Text(
-                    "Pull details from your phonebook",
-                    fontSize = 11.sp,
-                    fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
-                    color = MaterialTheme.colorScheme.secondary,
-                    letterSpacing = 0.sp
-                )
-            }
-            Spacer(modifier = Modifier.width(30.dp))
-            Box(modifier = Modifier.wrapContentSize()) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = "right arrow",
-                    tint = MaterialTheme.colorScheme.secondary
-                )
-            }
-        }
-
-    }
-}
 
 @Composable
 fun InputTextField(
@@ -594,6 +419,205 @@ fun InputTextField(
             )
         }
 
+    }
+}
+
+@Composable
+fun CustomerDetailsContent(customerModel: CustomerUiModel, onCloses: () -> Unit) {
+    Dialog(onDismissRequest = onCloses) {
+        Box(
+            modifier = Modifier
+                .width(327.dp)
+                .height(520.dp)
+                .clip(RoundedCornerShape(28.dp))
+                .background(
+                    color = MaterialTheme.colorScheme.background
+                )
+//                .paint(
+//                    painter = painterResource(id = R.drawable.modal_background),
+//                    contentScale = ContentScale.Fit
+//
+//                )
+//                .wrapContentSize()
+
+
+        ) {
+//            Image(
+//                painter = painterResource(id = R.drawable.modal_background),
+//                contentDescription = null,
+//                contentScale = ContentScale.FillBounds,
+//                modifier = Modifier.matchParentSize(),
+////                alpha = 0.25f
+
+//            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp)
+                    .padding(top = 32.dp, bottom = 24.dp),
+
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "close",
+                    modifier = Modifier
+                        .align(Alignment.End)
+                        .clickable { onCloses() })
+
+                Column(
+                    modifier = Modifier.padding(bottom = 28.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+
+                    ) {
+                    Text(
+                        customerModel.name,
+                        fontSize = 26.sp,
+                        fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                        letterSpacing = (-0.52).sp,
+                        textAlign = TextAlign.Center
+
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .width(72.dp)
+                            .height(3.dp)
+                            .background(color = MaterialTheme.colorScheme.tertiary)
+                            .clip(RoundedCornerShape(100))
+
+                    )
+
+                }
+
+                Column(modifier = Modifier.padding(bottom = 32.dp)) {
+                    DetailRow(
+                        label = "Phone Number",
+                        value = customerModel.contact,
+                        R.drawable.detail_phone
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    DetailRow(label = "Email", value = customerModel.email, R.drawable.detail_email)
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    DetailRow(
+                        label = "Address", value = customerModel.address, R.drawable.detail_location
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(32.dp))
+
+                EditCustomer(onClick = onCloses)
+
+
+            }
+        }
+    }
+}
+
+@Composable
+fun DetailRow(label: String, value: String, iconRes: Int) {
+    Box(
+        Modifier
+            .fillMaxWidth()
+            .height(74.dp)
+            .clip(RoundedCornerShape(20.dp))
+
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.modal_row_background),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize()
+
+        )
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .matchParentSize()
+                .padding(16.dp)
+//            )
+            , verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(end = 16.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .size(40.dp)
+                    .wrapContentSize()
+            ) {
+                Image(painter = painterResource(id = iconRes), contentDescription = null)
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column {
+                Text(
+                    text = label,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.secondary,
+                    fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
+                    letterSpacing = 0.24.sp,
+                    overflow = TextOverflow.Ellipsis
+
+                )
+                Text(
+                    text = value,
+                    fontSize = 15.sp,
+                    fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
+                    color = MaterialTheme.colorScheme.onTertiary,
+                    letterSpacing = 0.sp,
+                    overflow = TextOverflow.Ellipsis,
+                )
+            }
+
+        }
+    }
+}
+
+
+//}
+
+@Composable
+fun EditCustomer(onClick: () -> Unit) {
+    Button(
+        onClick = onClick, colors = ButtonDefaults.buttonColors(
+            containerColor = Color.Transparent,
+        ), contentPadding = PaddingValues(0.dp), shape = RoundedCornerShape(16.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .height(52.dp)
+                .fillMaxWidth()
+//                .clip(RoundedCornerShape(16.dp))
+        ) {
+            Image(
+                painter = painterResource(R.drawable.new_buttons_svg),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.matchParentSize()
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.Center)
+            ) {
+                Icon(imageVector = Icons.Default.Edit, contentDescription = "Add")
+                Text(
+                    text = "Edit Customer",
+                    fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
+                    fontSize = 16.sp,
+                    lineHeight = 21.sp
+                )
+            }
+
+        }
     }
 }
 
@@ -776,15 +800,17 @@ fun TextField(text: String) {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomerHome(
     onSearchClick: () -> Unit,
-    customers: List<CustomerModel>,
+    customers: List<CustomerUiModel>,
     onNewCustomerClick: () -> Unit,
     sharedViewModel: SharedViewModel = hiltViewModel(),
     onCustomerSelected: () -> Unit = {}
 ) {
     val listState = rememberLazyListState()
+    var selectedCustomer by remember { mutableStateOf<CustomerUiModel?>(null) }
 
     val isCollapsed by remember {
         derivedStateOf {
@@ -796,7 +822,8 @@ fun CustomerHome(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 20.dp)
+            .blur(if (selectedCustomer != null) 5.dp else 0.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         AnimatedVisibility(visible = !isCollapsed) {
@@ -826,10 +853,221 @@ fun CustomerHome(
             items(customers, key = { it.id }) { customer ->
                 CustomerItem(
                     customerModel = customer, onCustomerClick = {
+                        selectedCustomer = customer
                         sharedViewModel.selectedCustomer(customer)
                         onCustomerSelected()
                     })
             }
         }
+
+        if (selectedCustomer != null) {
+
+            CustomerDetailsContent(
+                customerModel = selectedCustomer!!, onCloses = { selectedCustomer = null })
+
+        }
+    }
+}
+
+@Composable
+fun ChooseFromCustomer(onClick: () -> Unit, enabled: Boolean = true) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .clip(RoundedCornerShape(12.dp))
+            .clickable {
+                if (enabled) onClick()
+            }) {
+        Image(
+            painter = painterResource(id = R.drawable.text_fields_background),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize()
+        )
+        Row(
+            modifier = Modifier
+                .padding(vertical = 10.dp)
+                .padding(start = 14.dp, end = 10.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+
+            ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f) // pushes arrow to the end
+            ) {
+
+                Image(
+                    painter = painterResource(id = R.drawable.customer),
+                    contentDescription = null,
+                    contentScale = ContentScale.FillBounds,
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Column(horizontalAlignment = Alignment.Start) {
+                    Text(
+                        "SELECT CUSTOMER",
+                        fontSize = 11.sp,
+                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 1.32.sp,
+                        textAlign = TextAlign.Left
+                    )
+
+                    Text(
+                        "Choose from customers",
+                        fontSize = 15.sp,
+                        fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
+                        color = MaterialTheme.colorScheme.secondary,
+                        textAlign = TextAlign.Left
+                    )
+                }
+            }
+            Box(modifier = Modifier.wrapContentSize()) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "right arrow",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ChooseFromContact(
+    onContactSelected: (name: String, phone: String) -> Unit
+) {
+
+    val context = LocalContext.current
+
+    val contactPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickContact()
+    ) { uri ->
+
+        uri?.let {
+            val resolver = context.contentResolver
+
+            val cursor = resolver.query(
+                it, null, null, null, null
+            )
+
+            cursor?.use { c ->
+
+                if (c.moveToFirst()) {
+
+                    val nameIndex = c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
+
+                    val idIndex = c.getColumnIndex(ContactsContract.Contacts._ID)
+
+                    val name = if (nameIndex != -1) c.getString(nameIndex) else ""
+                    val contactId = if (idIndex != -1) c.getString(idIndex) else ""
+
+                    if (contactId.isNotEmpty()) {
+                        val phoneCursor = resolver.query(
+                            ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                            null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?",
+                            arrayOf(contactId),
+                            null
+                        )
+
+                        phoneCursor?.use { p ->
+
+                            if (p.moveToFirst()) {
+
+                                val phoneIndex = p.getColumnIndex(
+                                    ContactsContract.CommonDataKinds.Phone.NUMBER
+                                )
+
+                                val phone = if (phoneIndex != -1) p.getString(phoneIndex) else ""
+
+                                onContactSelected(name, phone)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            contactPicker.launch(null)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .clip(RoundedCornerShape(100))
+            .clickable {
+                when (PackageManager.PERMISSION_GRANTED) {
+                    ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.READ_CONTACTS
+                    ) -> {
+                        contactPicker.launch(null)
+                    }
+
+                    else -> {
+                        permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+                    }
+                }
+            }) {
+        Image(
+            painter = painterResource(id = R.drawable.background_border),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize()
+        )
+        Row(
+            modifier = Modifier
+                .padding(vertical = 10.dp)
+                .padding(start = 14.dp, end = 10.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+
+            ) {
+            Image(
+                painter = painterResource(id = R.drawable.contact_svg),
+                contentDescription = null,
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier.size(40.dp)
+            )
+            Spacer(modifier = Modifier.width(30.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+
+                Text(
+                    "CHOOSE FROM CONTACTS",
+                    fontSize = 12.sp,
+                    fontWeight = MaterialTheme.typography.titleMedium.fontWeight,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    letterSpacing = 1.68.sp,
+                    textAlign = TextAlign.Left
+                )
+
+                Text(
+                    "Pull details from your phonebook",
+                    fontSize = 11.sp,
+                    fontWeight = MaterialTheme.typography.labelSmall.fontWeight,
+                    color = MaterialTheme.colorScheme.secondary,
+                    letterSpacing = 0.sp
+                )
+            }
+            Spacer(modifier = Modifier.width(30.dp))
+            Box(modifier = Modifier.wrapContentSize()) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = "right arrow",
+                    tint = MaterialTheme.colorScheme.secondary
+                )
+            }
+        }
+
     }
 }

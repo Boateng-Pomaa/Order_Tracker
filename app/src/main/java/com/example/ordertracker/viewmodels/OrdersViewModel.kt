@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ordertracker.data.repository.OrderRepository
 import com.example.ordertracker.orders.OrderModel
+import com.example.ordertracker.uistate.OrderUiModel
 import com.example.ordertracker.uistate.OrderUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,15 +23,34 @@ class OrdersViewModel @Inject constructor(private val orderRepository: OrderRepo
 
 
     val uiState: StateFlow<OrderUiState> =
-        orderRepository.orders.map { OrderUiState.Success(it) as OrderUiState }.stateIn(
+        orderRepository.orders.map { orders ->
+            val uiModels = orders.map { order ->
+                OrderUiModel(
+                    id = order.id,
+                    customerName = order.customerName,
+                    contact = order.contact,
+                    item = order.item,
+                    price = "GHS ${String.format("%.2f", order.price)}",
+                    units = order.units.toString(),
+                    status = order.status,
+                    statusLabel = order.status.label,
+                    delivery = order.delivery,
+                    deliveryLabel = order.delivery.label
+                )
+            }
+            OrderUiState.Success(uiModels)
+        }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = OrderUiState.Loading
         )
 
 
-    fun requestDelete(order: OrderModel) {
-        _orderToDelete.value = order
+    fun requestDelete(orderId: Long) {
+        viewModelScope.launch {
+            val order = orderRepository.getOrder(orderId)
+            _orderToDelete.value = order
+        }
     }
 
     fun confirmDelete() {

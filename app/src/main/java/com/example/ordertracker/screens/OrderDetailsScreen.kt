@@ -81,7 +81,7 @@ fun OrderDetailsScreen(
 
     LaunchedEffect(selectedCustomer) {
         selectedCustomer?.let {
-            viewModel.updateCustomerName(it.customerName)
+            viewModel.updateCustomerName(it.name)
             viewModel.updateContact(it.contact)
         }
     }

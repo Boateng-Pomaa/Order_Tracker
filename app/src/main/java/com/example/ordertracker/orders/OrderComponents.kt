@@ -72,6 +72,7 @@ import com.example.ordertracker.R
 import com.example.ordertracker.customers.ChooseFromCustomer
 import com.example.ordertracker.customers.InputTextField
 import com.example.ordertracker.uistate.OrderDetailsUiState
+import com.example.ordertracker.uistate.OrderUiModel
 import com.example.ordertracker.uistate.OrderUiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -79,7 +80,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OrderItems(
-    order: OrderModel, onDeleteOrderClick: () -> Unit, onOrderClick: (Long) -> Unit = {}
+    order: OrderUiModel, onDeleteOrderClick: () -> Unit, onOrderClick: (Long) -> Unit = {}
 ) {
 
     Box {
@@ -117,7 +118,7 @@ fun OrderItems(
                     )
 
                     Text(
-                        text = "GHC ${order.price}",
+                        text = order.price,
                         fontSize = 15.sp,
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.tertiary,
@@ -188,7 +189,7 @@ fun OrderItems(
 
                     ) {
                         Text(
-                            text = order.delivery.label,
+                            text = order.deliveryLabel,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -231,7 +232,7 @@ fun OrderItems(
                                 )
                             }
                             Text(
-                                text = order.status.label,
+                                text = order.statusLabel,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontSize = 14.sp,
                                 color = MaterialTheme.colorScheme.background,
@@ -312,8 +313,8 @@ fun PendingOrders(state: OrderUiState.Success) {
 
 @Composable
 fun Home(
-    orders: List<OrderModel>,
-    onDeleteOrderClick: (OrderModel) -> Unit,
+    orders: List<OrderUiModel>,
+    onDeleteOrderClick: (OrderUiModel) -> Unit,
     onOrderClick: (Long) -> Unit = {}
 ) {
 

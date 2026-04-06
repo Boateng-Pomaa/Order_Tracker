@@ -1,6 +1,7 @@
 [versions]
 agp = "9.1.0"
 coreKtx = "1.10.1"
+firebaseBom = "34.11.0"
 junit = "4.13.2"
 junitVersion = "1.1.5"
 espressoCore = "3.5.0"
@@ -24,10 +25,12 @@ foundationVersion = "1.10.4"
 foundationLayoutVersion = "1.10.4"
 uiVersion = "1.10.5"
 androidxFoundation = "1.10.5"
+firebaseFirestore = "26.1.2"
 
 [libraries]
 androidx-compose-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
@@ -56,6 +59,7 @@ androidx-foundation = { group = "androidx.compose.foundation", name = "foundatio
 androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayoutVersion" }
 ui = { group = "androidx.compose.ui", name = "ui", version.ref = "uiVersion" }
 foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "androidxFoundation" }
+firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

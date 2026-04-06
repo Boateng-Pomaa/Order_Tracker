@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import com.example.ordertracker.R
 import com.example.ordertracker.orders.OrderModel
 import com.example.ordertracker.orders.Status
+import com.example.ordertracker.uistate.OrderUiModel
 import com.example.ordertracker.util.SearchType
 
 
@@ -105,7 +106,7 @@ fun SearchTypeSelector(
 }
 
 @Composable
-fun OrderSearch(order: OrderModel, onOrderClick: (Long) -> Unit) {
+fun OrderSearch(order: OrderUiModel, onOrderClick: (Long) -> Unit) {
     Box {
         Image(
             painter = painterResource(id = R.drawable.background_overlay),

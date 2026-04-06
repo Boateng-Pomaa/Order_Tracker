@@ -34,11 +34,10 @@ fun CustomersScreen(navController: NavHostController, sharedViewModel: SharedVie
     }) { innerPadding ->
 
         Customer(
-            modifier = Modifier.padding(innerPadding),
-            sharedViewModel = sharedViewModel,
-            onCustomerClick = {
-                navController.popBackStack()
-            },
+            modifier = Modifier.padding(innerPadding), sharedViewModel = sharedViewModel,
+//            onCustomerClick = {
+//                navController.popBackStack()
+//            },
             onSearchClick = {
                 navController.navigate(BottomNavItems.Search.route) {
                     popUpTo(navController.graph.findStartDestination().id) {
@@ -47,8 +46,7 @@ fun CustomersScreen(navController: NavHostController, sharedViewModel: SharedVie
                     launchSingleTop = true
                     restoreState = true
                 }
-            },
-            onNewCustomerClick = {
+            }, onNewCustomerClick = {
                 navController.navigate(Routes.NEW_CUSTOMER)
             })
     }
@@ -59,7 +57,7 @@ fun Customer(
     modifier: Modifier = Modifier,
     viewModel: CustomersViewModel = hiltViewModel(),
     sharedViewModel: SharedViewModel,
-    onCustomerClick: () -> Unit,
+
     onSearchClick: () -> Unit,
     onNewCustomerClick: () -> Unit
 ) {
@@ -77,9 +75,9 @@ fun Customer(
                     customers = (uiState as CustomersUiState.Success).customers,
                     onNewCustomerClick = onNewCustomerClick,
                     sharedViewModel = sharedViewModel,
-                    onCustomerSelected = {
-                        onCustomerClick()
-                    }
+//                    onCustomerSelected = {
+////                        onCustomerClick()
+//                    }
                 )
             }
 

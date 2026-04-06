@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
     alias(libs.plugins.ksp)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -56,6 +57,7 @@ dependencies {
     implementation(libs.androidx.foundation.layout)
     implementation(libs.ui)
     implementation(libs.foundation)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,6 +73,7 @@ dependencies {
     ksp(libs.hilt.compiler)
 
     implementation(libs.androidx.compose.ui.text.google.fonts)
+    implementation(platform(libs.firebase.bom))
 
 }
 

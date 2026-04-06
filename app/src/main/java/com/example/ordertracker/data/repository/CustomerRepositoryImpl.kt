@@ -1,38 +1,58 @@
 package com.example.ordertracker.data.repository
 
 import com.example.ordertracker.customers.CustomerModel
-import com.example.ordertracker.data.remote.CustomerApi
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
 class CustomerRepositoryImpl @Inject constructor(
-    private val customerApi: CustomerApi
-
+    db: FirebaseFirestore,
 ) : CustomerRepository {
-    override val customers = customerApi.customers
 
+    private val _customers = MutableStateFlow<List<CustomerModel>>(emptyList())
+    override val customers: StateFlow<List<CustomerModel>> = _customers.asStateFlow()
+
+    private val customerCollection = db.collection("customers")
+
+    init {
+        customerCollection.addSnapshotListener { snapshot, e ->
+            if (e != null) return@addSnapshotListener
+            if (snapshot != null) {
+                _customers.value = snapshot.toObjects(CustomerModel::class.java)
+            }
+        }
+    }
 
     override suspend fun getCustomers(): List<CustomerModel> {
-        return customerApi.getCustomers()
+        return try {
+            val snapshot = customerCollection.get().await()
+            snapshot.toObjects(CustomerModel::class.java)
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 
     override suspend fun getCustomer(customerId: Long): CustomerModel? {
-        return customerApi.getCustomer(customerId)
-
+        return try {
+            val snapshot = customerCollection.whereEqualTo("id", customerId).get().await()
+            snapshot.toObjects(CustomerModel::class.java).firstOrNull()
+        } catch (e: Exception) {
+            null
+        }
     }
 
     override suspend fun createCustomer(customer: CustomerModel) {
-        customerApi.createCustomer(customer)
+        customerCollection.document(customer.id.toString()).set(customer).await()
     }
 
     override suspend fun deleteCustomer(customer: CustomerModel) {
-        customerApi.deleteCustomer(customer)
+        customerCollection.document(customer.id.toString()).delete().await()
     }
 
     override suspend fun updateCustomer(customer: CustomerModel) {
-        customerApi.updateCustomer(customer)
-
+        customerCollection.document(customer.id.toString()).set(customer).await()
     }
-
-
 }

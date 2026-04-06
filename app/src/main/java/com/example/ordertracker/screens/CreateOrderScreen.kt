@@ -96,7 +96,7 @@ fun CreateOrder(
 
     LaunchedEffect(selectedCustomer) {
         selectedCustomer?.let {
-            viewModel.onCustomerNameChange(0, it.customerName)
+            viewModel.onCustomerNameChange(0, it.name)
             viewModel.onContactChange(0, it.contact)
         }
     }

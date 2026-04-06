@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,6 +23,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -27,10 +31,12 @@ import androidx.navigation.NavHostController
 import com.example.ordertracker.MainScreensTopBar
 import com.example.ordertracker.OrderTrackerBottomBar
 import com.example.ordertracker.OrderTrackerTopBar
+import com.example.ordertracker.customers.CustomerDetailsContent
 import com.example.ordertracker.customers.CustomerItem
 import com.example.ordertracker.customers.SearchBar
 import com.example.ordertracker.search.OrderSearch
 import com.example.ordertracker.search.SearchTypeSelector
+import com.example.ordertracker.uistate.CustomerUiModel
 import com.example.ordertracker.uistate.CustomersUiState
 import com.example.ordertracker.uistate.OrderUiState
 import com.example.ordertracker.util.SearchType
@@ -70,6 +76,7 @@ fun SearchScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Search(
     modifier: Modifier = Modifier,
@@ -84,6 +91,9 @@ fun Search(
     val ordersUiState by ordersViewModel.uiState.collectAsState()
     var selectedType by remember { mutableStateOf(SearchType.CUSTOMER) }
     var searchQuery by remember { mutableStateOf("") }
+
+    val sheetState = rememberModalBottomSheetState()
+    var selectedCustomer by remember { mutableStateOf<CustomerUiModel?>(null) }
 
 
     Column(modifier = modifier.padding(horizontal = 20.dp)) {
@@ -120,7 +130,7 @@ fun Search(
                         customers
                     } else {
                         customers.filter {
-                            it.customerName.contains(searchQuery, ignoreCase = true) ||
+                            it.name.contains(searchQuery, ignoreCase = true) ||
                                     it.contact.contains(searchQuery, ignoreCase = true) ||
                                     it.email.contains(searchQuery, ignoreCase = true)
                         }
@@ -136,8 +146,12 @@ fun Search(
                             items(filteredCustomers, key = { it.id }) { customer ->
                                 CustomerItem(
                                     customerModel = customer, onCustomerClick = {
-                                        sharedViewModel.selectedCustomer(customer)
-                                        onCustomerSelected()
+                                        if (isSelection) {
+                                            sharedViewModel.selectedCustomer(customer)
+                                            onCustomerSelected()
+                                        } else {
+                                            selectedCustomer = customer
+                                        }
                                     })
                             }
                         }
@@ -191,6 +205,17 @@ fun Search(
                     Text(text = (ordersUiState as OrderUiState.Error).message)
                 }
             }
+        }
+    }
+
+    if (selectedCustomer != null) {
+        ModalBottomSheet(
+            onDismissRequest = { },
+            sheetState = sheetState,
+            containerColor = Color(0xFF0F2A2E)
+        ) {
+            CustomerDetailsContent(
+                customerModel = selectedCustomer!!, onCloses = { selectedCustomer = null })
         }
     }
 

@@ -1,6 +1,5 @@
 package com.example.ordertracker.viewmodels
 
-import androidx.activity.result.launch
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.ordertracker.customers.CustomerModel
@@ -88,6 +87,20 @@ class CreateCustomerViewModel @Inject constructor(private val customerRepository
             }
         }
     }
+
+//    fun loadCustomers() {
+//        viewModelScope.launch {
+//            _isLoading.value = true
+//            try {
+//                val list = customerRepository.getCustomers()
+//                _customers.value = list
+//            } catch (e: Exception) {
+//                // Handle error
+//            } finally {
+//                _isLoading.value = false
+//            }
+//        }
+//    }
 
     fun onDismissSuccessDialog() {
         _uiState.update {

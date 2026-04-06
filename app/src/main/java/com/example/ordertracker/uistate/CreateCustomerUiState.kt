@@ -1,6 +1,7 @@
 package com.example.ordertracker.uistate
 
 data class CreateCustomerUiState(
+    val id: Long = 0,
     val customerName: String = "",
     val contact: String = "",
     val email: String = "",

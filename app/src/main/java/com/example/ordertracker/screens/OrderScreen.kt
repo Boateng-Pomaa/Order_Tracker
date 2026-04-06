@@ -166,7 +166,7 @@ fun OrderTrackerScreen(
                 Home(
                     orders = (uiState as OrderUiState.Success).orders,
                     onDeleteOrderClick = { order ->
-                        viewModel.requestDelete(order)
+                        viewModel.requestDelete(order.id)
                     },
                     onOrderClick = { orderId ->
                         onOrderClick(orderId)
